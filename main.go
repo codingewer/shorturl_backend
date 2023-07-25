@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+	"os"
 	"short-link/controllers"
 
 	"github.com/gin-contrib/cors"
@@ -31,5 +33,11 @@ func main() {
 	user.POST("/new", controllers.CreateUser)
 	user.POST("/login", controllers.Login)
 
-	router.Run("localhost:8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	if err := router.Run(":" + port); err != nil {
+		log.Panicf("error: %s", err)
+	}
 }
