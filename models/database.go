@@ -22,7 +22,7 @@ var userCollection mongo.Collection
 func init() {
 
 	//.env dosyasını yükle
-	err := godotenv.Load("enviroments/.env")
+	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("err loading: %v", err)
 	}
