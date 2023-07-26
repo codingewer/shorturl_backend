@@ -21,11 +21,12 @@ var userCollection mongo.Collection
 
 func init() {
 
-	// Veri tabanına bağlanmak için bir istemci oluştur
-	err := godotenv.Load()
+	//.env dosyasını yükle
+	err := godotenv.Load("enviroments/.env")
 	if err != nil {
 		log.Fatalf("err loading: %v", err)
 	}
+	// Veri tabanına bağlanmak için bir istemci oluştur
 	uri := os.Getenv("DB_URL")
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 
