@@ -12,8 +12,8 @@ import (
 )
 
 func main() {
-	go GetByTime()
 
+	go GetByTime()
 	router := gin.Default()
 	//Url için api linkleri
 

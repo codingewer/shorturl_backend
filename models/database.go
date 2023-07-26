@@ -3,14 +3,16 @@ package models
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 // Veri tabanı bağalantı linki ujkbqpruk3Q2cnXo
-const uri = "mongodb+srv://yucelatl:ujkbqpruk3Q2cnXo@short-url.vwcugln.mongodb.net/?retryWrites=true&w=majority"
 
 // Değişkenler
 var urlDB mongo.Database
@@ -20,6 +22,11 @@ var userCollection mongo.Collection
 func init() {
 
 	// Veri tabanına bağlanmak için bir istemci oluştur
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("err loading: %v", err)
+	}
+	uri := os.Getenv("DB_URL")
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 
 	if err != nil {
