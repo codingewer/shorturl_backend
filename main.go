@@ -4,16 +4,12 @@ import (
 	"log"
 	"os"
 	"short-link/controllers"
-	"short-link/models"
-	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-
-	go GetByTime()
 	router := gin.Default()
 	//Url için api linkleri
 
@@ -39,6 +35,7 @@ func main() {
 
 	balance := router.Group("balance")
 	balance.POST("/add", controllers.NewBalanceRequests)
+	balance.GET("/getall", controllers.GetBalanceRequests)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -48,18 +45,4 @@ func main() {
 		log.Panicf("error: %s", err)
 	}
 
-}
-
-func GetByTime() {
-	ticker := time.NewTicker(30 * time.Minute)
-
-	defer ticker.Stop()
-	for {
-		select {
-		case <-ticker.C:
-			url := models.Url{}
-			_, _ = url.FindAllUrl()
-
-		}
-	}
 }

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,6 +12,7 @@ import (
 type BalanceRequest struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"ID"`
 	UserId    primitive.ObjectID `json:"userId"  bson:"user_id"`
+	User      ResponseUser       `json:"user"  bson:"-"`
 	Amount    float64            `json:"amount"  bson:"amount"`
 	Status    bool               `json:"status"  bson:"status"`
 	CreatedAt primitive.DateTime `json:"createdAt"  bson:"created_at"`
@@ -24,6 +26,7 @@ func (balanceReq BalanceRequest) CreateNewRequest() (BalanceRequest, error) {
 	user := User{}
 	err := user.UpdateBalance(balanceReq.UserId, balanceReq.Amount)
 	if err != nil {
+		fmt.Println("23")
 		return BalanceRequest{}, err
 	}
 	db, ctx := getBalanceCollection()
@@ -68,6 +71,14 @@ func (balancereq BalanceRequest) FindRequestsByStatus(status bool) ([]BalanceReq
 	var results []BalanceRequest
 	if err = cursor.All(ctx, &results); err != nil {
 		return []BalanceRequest{}, err
+	}
+	for i, _ := range results {
+		user := User{}
+		userr, err := user.FindUserByID(results[i].UserId)
+		if err != nil {
+			return []BalanceRequest{}, err
+		}
+		results[i].User = userr
 	}
 	return results, nil
 }

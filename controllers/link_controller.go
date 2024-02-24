@@ -15,28 +15,13 @@ import (
 // Veritabanına kayeden fonsiyonu çağırıp http ile bağlanmamızı sağlayan fonksiyon
 func ShortLink(c *gin.Context) {
 	url := models.Url{}
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": http.StatusUnprocessableEntity})
-		return
-	}
-	//Gelen veriyi Link yapısına dönüştürdük
-	err = json.Unmarshal(body, &url)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": err.Error()})
-		return
-	}
-
+	c.BindJSON(&url)
 	//kullanıcı isim vermezse rastgele 10 karakterlik benzersiz bir isim oluştrulur
 	urll := models.Url{}
 	urls, err := urll.FindAllUrl()
 	if err != nil {
 		c.JSON(http.StatusUnprocessableEntity, gin.H{"ERROR": "Bu zaten var"})
 		return
-	}
-
-	if url.ValidityDays == 0 {
-		url.ValidityDays = 30
 	}
 
 	if url.OrginalUrl[0:8] != "https://" {
@@ -50,7 +35,6 @@ func ShortLink(c *gin.Context) {
 	if url.ShortenedUrl == "" {
 		for i, _ := range urls {
 			shortenrdUrl = models.GenerateString(10)
-			fmt.Println(urls[i].ShortenedUrl)
 			if shortenrdUrl == urls[i].ShortenedUrl {
 				url.ShortenedUrl = models.GenerateString(10)
 				break

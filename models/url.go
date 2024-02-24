@@ -2,7 +2,6 @@ package models
 
 import (
 	"context"
-	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -16,9 +15,7 @@ type Url struct {
 	ShortenedUrl string             `bson:"shortened_url,CreatedBy"`
 	CreatedBy    string             `bson:"created_by,CreatedBy"`
 	CreatedAt    primitive.DateTime `bson:"created_at,omitempty"`
-	ValidityDays int                `bson:"validity_days,omitempty"`
 	ClickCount   int                `bson:"click_count,CreatedBy"`
-	RemainingDay int                `json:"RemainingDay"`
 }
 
 // Kısaltılan linki veri tabanına kaydeden fonsikyon
@@ -29,10 +26,6 @@ func (url *Url) ShortLink() (Url, error) {
 	if err != nil {
 		return Url{}, err
 	}
-	now := time.Now()
-	createdAt := time.Unix(time.Now().Unix(), 0)
-	difference := now.Sub(createdAt).Hours() / 24
-	url.RemainingDay = url.ValidityDays - int(difference)
 	oid, _ := response.InsertedID.(primitive.ObjectID)
 	url.ID = oid
 	return *url, nil
@@ -53,20 +46,6 @@ func (url Url) FindAllUrl() ([]Url, error) {
 	if err = cursor.All(ctx, &results); err != nil {
 		return []Url{}, err
 	}
-
-	//Süresi geçmiş linklerin silinmesi
-	for i, _ := range results {
-		now := time.Now()
-		createdAt := time.Unix(results[i].CreatedAt.Time().Unix(), 0)
-		difference := now.Sub(createdAt).Hours() / 24
-		results[i].RemainingDay = results[i].ValidityDays - int(difference)
-		if int(difference) > results[i].ValidityDays {
-			err := url.DeleteByID(results[i].ID)
-			if err != nil {
-				return []Url{}, err
-			}
-		}
-	}
 	return results, err
 }
 
@@ -84,14 +63,19 @@ func (url Url) FindByUrl(shortenedurl string) (Url, error) {
 
 	//Link çağırıldıktan sonra tıklanma sayısını güncelleme
 	click := result.ClickCount + 1
-
 	update := bson.D{{"$set", bson.D{{"click_count", click}}}}
-
 	_, err = db.UpdateOne(ctx, filter, update)
-
 	if err != nil {
 		return Url{}, err
 	}
+
+	user := User{}
+
+	err = user.AddBalance(result.CreatedBy, 1)
+	if err != nil {
+		return Url{}, err
+	}
+
 	return result, nil
 }
 
@@ -123,18 +107,6 @@ func (url Url) FindByCreatedBy(username string) ([]Url, error) {
 	var results []Url
 	if err = cursor.All(ctx, &results); err != nil {
 		return []Url{}, err
-	}
-	for i, _ := range results {
-		now := time.Now()
-		createdAt := time.Unix(results[i].CreatedAt.Time().Unix(), 0)
-		difference := now.Sub(createdAt).Hours() / 24
-		results[i].RemainingDay = results[i].ValidityDays - int(difference)
-		if int(difference) > results[i].ValidityDays {
-			err := url.DeleteByID(results[i].ID)
-			if err != nil {
-				return []Url{}, err
-			}
-		}
 	}
 	return results, nil
 }

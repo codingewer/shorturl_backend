@@ -60,12 +60,12 @@ func ValidateUseToken(c *gin.Context) (jwt.MapClaims, error) {
 	}
 }
 
-func ClaimsToUser(claims jwt.MapClaims) models.User {
+func ClaimsToUser(claims jwt.MapClaims) models.ResponseUser {
 	ID, err := primitive.ObjectIDFromHex(claims["user_id"].(string))
 	if err != nil {
-		return models.User{}
+		return models.ResponseUser{}
 	}
-	return models.User{
+	return models.ResponseUser{
 		ID:       ID,
 		UserName: claims["username"].(string),
 		Role:     claims["role"].(string),

@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -18,12 +19,21 @@ type User struct {
 	UrlCount int                `bson:"click_count,omitempty"`
 }
 
+type ResponseUser struct {
+	ID       primitive.ObjectID `bson:"_id,omitempty"`
+	UserName string             `bson:"username,omitempty"`
+	Role     string             `bson:"role,omitempty"`
+	Balance  float64            `bson:"balance,omitempty"`
+	UrlCount int                `bson:"click_count,omitempty"`
+}
+
 // Kullanıcıyı veri tabanına kaydetme
 func (usr User) CreateUser() (User, error) {
 	passworHashed, err := HashPassword(usr.Password)
 	if err != nil {
 		return User{}, err
 	}
+	usr.Role = "user"
 	usr.Password = passworHashed
 	ctx := context.TODO()
 	db := getDB()
@@ -52,15 +62,15 @@ func (user User) FindByUserName(username string) (User, error) {
 	return result, nil
 }
 
-func (user User) FindUserByID(id primitive.ObjectID) (User, error) {
+func (user User) FindUserByID(id primitive.ObjectID) (ResponseUser, error) {
 	db := getUserCollection()
 	ctx := context.TODO()
 	filter := bson.M{"_id": id}
 
-	var result User
+	var result ResponseUser
 	err := db.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
-		return User{}, err
+		return ResponseUser{}, err
 	}
 
 	return result, nil
@@ -113,6 +123,7 @@ func (user User) NewLinkCount(username string) error {
 func (user User) UpdateBalance(userId primitive.ObjectID, amount float64) error {
 	db := getUserCollection()
 	ctx := context.TODO()
+	fmt.Println(userId)
 	filter := bson.M{"_id": userId}
 	var result User
 	err := db.FindOne(ctx, filter).Decode(&result)
@@ -121,6 +132,49 @@ func (user User) UpdateBalance(userId primitive.ObjectID, amount float64) error 
 	}
 	balance := result.Balance - amount
 	update := bson.D{{"$set", bson.D{{"balance", balance}}}}
+
+	_, err = db.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (user User) AddBalance(userName string, amount float64) error {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"username": userName}
+	var result User
+	err := db.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return err
+	}
+	balance := result.Balance + amount
+	update := bson.D{{"$set", bson.D{{"balance", balance}}}}
+
+	_, err = db.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (user User) UpdatePassword(userId primitive.ObjectID, newPassword string) error {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"_id": userId}
+	var result User
+	err := db.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return err
+	}
+	passwordHashed, err := HashPassword(newPassword)
+	if err != nil {
+		return err
+	}
+	update := bson.D{{"$set", bson.D{{"password", passwordHashed}}}}
 
 	_, err = db.UpdateOne(ctx, filter, update)
 
