@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"short-link/auth"
 	"short-link/models"
 
 	"github.com/gin-gonic/gin"
@@ -13,21 +12,16 @@ import (
 // Veritabanına kayeden fonsiyonu çağırıp http ile bağlanmamızı sağlayan fonksiyon
 func CreateUser(c *gin.Context) {
 	user := models.User{}
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": http.StatusUnprocessableEntity})
+	c.BindJSON(&user)
+	//Gelen veriyi User nsnesine dönüştürdük
+	//userr := models.User{}
+	//Kullanıcı adı benzersiz mi diye kontrol edilir
+	users, err := user.FindAllUsers()
+	for err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
 
-	//Gelen veriyi User nsnesine dönüştürdük
-	err = json.Unmarshal(body, &user)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": http.StatusUnprocessableEntity})
-		return
-	}
-	userr := models.User{}
-	//Kullanıcı adı benzersiz mi diye kontrol edilir
-	users, err := userr.FindAllUsers()
 	for i, _ := range users {
 		if users[i].UserName == user.UserName {
 			c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu kullancı adı kullanılıyor."})
@@ -40,6 +34,7 @@ func CreateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
+	userll.Password = ""
 	c.JSON(http.StatusOK, userll)
 }
 
@@ -70,13 +65,7 @@ func GetByUserName(c *gin.Context) {
 // Giriş yapmamızı sağlayan fonkiyonu http üzerinden çağıran fonksiyon
 func Login(c *gin.Context) {
 	user := models.User{}
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": http.StatusUnprocessableEntity})
-		return
-	}
-
-	err = json.Unmarshal(body, &user)
+	c.BindJSON(&user)
 
 	//Kullanıcı adı ve şifre kontrol edilir
 	result, err := user.FindByUserName(user.UserName)
@@ -84,10 +73,11 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
 		return
 	}
-
-	if user.Password != result.Password {
+	err = models.ComparePasswords(result.Password, user.Password)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Şifre Hatalı"})
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	token, _ := auth.GenerateTokenForUser(result)
+	c.JSON(http.StatusOK, token)
 }

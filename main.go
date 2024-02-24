@@ -21,7 +21,7 @@ func main() {
 	config.AllowAllOrigins = true
 	config.AllowCredentials = true
 	//config.AllowOrigins = []string{"http://localhost:3001"}
-	router.Use(cors.New(config))
+	router.Use(cors.Default())
 
 	url := router.Group("url")
 	url.POST("/add", controllers.ShortLink)
@@ -36,6 +36,9 @@ func main() {
 	user.GET("/getall", controllers.GetAllUsers)
 	user.POST("/new", controllers.CreateUser)
 	user.POST("/login", controllers.Login)
+
+	balance := router.Group("balance")
+	balance.POST("/add", controllers.NewBalanceRequests)
 
 	port := os.Getenv("PORT")
 	if port == "" {

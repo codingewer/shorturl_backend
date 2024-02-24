@@ -12,12 +12,19 @@ import (
 type User struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty"`
 	UserName string             `bson:"username,omitempty"`
+	Role     string             `bson:"role,omitempty"`
 	Password string             `bson:"password,omitempty"`
+	Balance  float64            `bson:"balance,omitempty"`
 	UrlCount int                `bson:"click_count,omitempty"`
 }
 
 // Kullanıcıyı veri tabanına kaydetme
 func (usr User) CreateUser() (User, error) {
+	passworHashed, err := HashPassword(usr.Password)
+	if err != nil {
+		return User{}, err
+	}
+	usr.Password = passworHashed
 	ctx := context.TODO()
 	db := getDB()
 	response, err := db.Collection("user").InsertOne(ctx, &usr)
@@ -26,6 +33,7 @@ func (usr User) CreateUser() (User, error) {
 	}
 	oid, _ := response.InsertedID.(primitive.ObjectID)
 	usr.ID = oid
+	usr.Role = "user"
 	return usr, nil
 }
 
@@ -34,6 +42,20 @@ func (user User) FindByUserName(username string) (User, error) {
 	db := getUserCollection()
 	ctx := context.TODO()
 	filter := bson.M{"username": username}
+
+	var result User
+	err := db.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return User{}, err
+	}
+
+	return result, nil
+}
+
+func (user User) FindUserByID(id primitive.ObjectID) (User, error) {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"_id": id}
 
 	var result User
 	err := db.FindOne(ctx, filter).Decode(&result)
@@ -79,6 +101,26 @@ func (user User) NewLinkCount(username string) error {
 	count := result.UrlCount + 1
 
 	update := bson.D{{"$set", bson.D{{"click_count", count}}}}
+
+	_, err = db.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (user User) UpdateBalance(userId primitive.ObjectID, amount float64) error {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"_id": userId}
+	var result User
+	err := db.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return err
+	}
+	balance := result.Balance - amount
+	update := bson.D{{"$set", bson.D{{"balance", balance}}}}
 
 	_, err = db.UpdateOne(ctx, filter, update)
 

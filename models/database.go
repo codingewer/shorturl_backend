@@ -18,6 +18,7 @@ import (
 var urlDB mongo.Database
 var urlCollection mongo.Collection
 var userCollection mongo.Collection
+var balanceCollection mongo.Collection
 
 func init() {
 
@@ -43,6 +44,7 @@ func init() {
 	urlDB = *client.Database("shorturls")
 	urlCollection = *urlDB.Collection("url")
 	userCollection = *urlDB.Collection("user")
+	balanceCollection = *urlDB.Collection("balance")
 
 	fmt.Println("Successfully connected and pinged.")
 }
@@ -58,4 +60,8 @@ func getUrlCollection() *mongo.Collection {
 
 func getUserCollection() *mongo.Collection {
 	return &userCollection
+}
+
+func getBalanceCollection() (*mongo.Collection, context.Context) {
+	return &balanceCollection, context.TODO()
 }
