@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"short-link/auth"
 	"short-link/models"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,10 +13,13 @@ import (
 func NewBalanceRequests(c *gin.Context) {
 	balance := models.BalanceRequest{}
 	c.BindJSON(&balance)
-	claims, _ := auth.ValidateUseToken(c)
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	tokenUser := auth.ClaimsToUser(claims)
 	user := models.User{}
-
 	userFromDB, err := user.FindUserByID(tokenUser.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -43,7 +47,14 @@ func NewBalanceRequests(c *gin.Context) {
 
 func GetBalanceRequests(c *gin.Context) {
 	balance := models.BalanceRequest{}
-	balanceRequests, err := balance.FindRequestsByStatus(false)
+	// get status param
+	status := c.Param("status")
+	stats, err := strconv.ParseBool(status)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	balanceRequests, err := balance.FindRequestsByStatus(stats)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error12": err.Error()})
 		return

@@ -35,11 +35,14 @@ func main() {
 
 	balance := router.Group("balance")
 	balance.POST("/add", controllers.NewBalanceRequests)
-	balance.GET("/getall", controllers.GetBalanceRequests)
+	balance.GET("/getbystatus/:status", controllers.GetBalanceRequests)
+
+	seen := router.Group("seen")
+	seen.GET("/userseen/:days", controllers.GetUserSeenData)
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "8180"
 	}
 	if err := router.Run(":" + port); err != nil {
 		log.Panicf("error: %s", err)

@@ -1,10 +1,9 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
+	"short-link/auth"
 	"short-link/models"
 	"time"
 
@@ -94,7 +93,20 @@ func GetAll(c *gin.Context) {
 func GetByUrl(c *gin.Context) {
 	url := models.Url{}
 	title := c.Param("shortenedurl")
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+
 	result, err := url.FindByUrl(title)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	seen := models.Seen{}
+	err = seen.NewSeen(tokenUser.ID, result.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
@@ -105,17 +117,7 @@ func GetByUrl(c *gin.Context) {
 // Link İdsine göre veri tabanından linki  silen fonksiyonu http üzerinden bağlanmamızı sağlayan fonksiyon
 func DeleteByID(c *gin.Context) {
 	url := models.Url{}
-	body, err := ioutil.ReadAll(c.Request.Body)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": http.StatusUnprocessableEntity})
-		return
-	}
-	//Gelen veriyi Link yapısına dönüştürdük
-	err = json.Unmarshal(body, &url)
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"status": err.Error()})
-		return
-	}
+	c.BindJSON(url)
 	id := c.Param("id")
 	idd, _ := primitive.ObjectIDFromHex(id)
 

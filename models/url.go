@@ -11,6 +11,9 @@ import (
 // Link objesi
 type Url struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
+	UserID       primitive.ObjectID `bson:"user_id,omitempty"`
+	Title        string             `bson:"title,omitempty"`
+	Description  string             `bson:"description,omitempty"`
 	OrginalUrl   string             `bson:"orginal_url,omitempty" json:"OrginalUrl"`
 	ShortenedUrl string             `bson:"shortened_url,CreatedBy"`
 	CreatedBy    string             `bson:"created_by,CreatedBy"`
@@ -54,7 +57,7 @@ func (url Url) FindByUrl(shortenedurl string) (Url, error) {
 	db := getUrlCollection()
 	ctx := context.TODO()
 	filter := bson.M{"shortened_url": shortenedurl}
-
+	//Linki veri tabanından çekme
 	var result Url
 	err := db.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
@@ -68,9 +71,10 @@ func (url Url) FindByUrl(shortenedurl string) (Url, error) {
 	if err != nil {
 		return Url{}, err
 	}
+	//Görüntülendi objesi oluşturma
 
+	//Kullanıcının bakiyesini görüntülenme başı artırmak
 	user := User{}
-
 	err = user.AddBalance(result.CreatedBy, 1)
 	if err != nil {
 		return Url{}, err
