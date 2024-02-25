@@ -95,7 +95,7 @@ func GetByUrl(c *gin.Context) {
 	title := c.Param("shortenedurl")
 	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
 	}
 	tokenUser := auth.ClaimsToUser(claims)

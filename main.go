@@ -40,6 +40,11 @@ func main() {
 	seen := router.Group("seen")
 	seen.GET("/userseen/:days", controllers.GetUserSeenData)
 
+	help := router.Group("help")
+	help.POST("/new", controllers.NewHelpRequest)
+	help.GET("/getbystatus/:status", controllers.GetHelpRequestsByStatus)
+	help.PUT("/updatestatus/:status", controllers.ChangeHelpRequestStatus)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8180"

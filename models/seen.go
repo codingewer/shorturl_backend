@@ -15,7 +15,7 @@ type Seen struct {
 }
 
 type ChartData struct {
-	Balance map[string]float64 `json:"balance_chart"`
+	Balance map[string]float32 `json:"balance_chart"`
 	Views   map[string]int     `json:"views_chart"`
 }
 
@@ -40,7 +40,8 @@ func (seen Seen) GetSeenData(userID primitive.ObjectID, days int) (ChartData, er
 	db, ctx := getSeenCollection()
 
 	viewCounts := make(map[string]int)
-	balanceCounts := make(map[string]float64)
+	balanceCounts := make(map[string]float32)
+	// sadece integerlardan oluşan bir array ver
 	filter := bson.M{"user_id": userID, "created_at": bson.M{"$gte": time.Now().AddDate(0, 0, -days)}}
 	cursor, err := db.Find(ctx, filter)
 	if err != nil {

@@ -15,30 +15,30 @@ func NewBalanceRequests(c *gin.Context) {
 	c.BindJSON(&balance)
 	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
 	}
 	tokenUser := auth.ClaimsToUser(claims)
 	user := models.User{}
 	userFromDB, err := user.FindUserByID(tokenUser.ID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
 	}
 	if userFromDB.Balance < 10 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bakiye 10 TL'den az!"})
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bakiye 10 TL'den az!"})
 		return
 	}
 	if userFromDB.Balance < balance.Amount {
 		fmt.Println(tokenUser)
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bakiye yetersiz"})
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bakiye yetersiz"})
 		return
 	}
 	balance.UserId = tokenUser.ID
 	balance.User = userFromDB
 	balanceSaved, err := balance.CreateNewRequest()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
 	}
 
@@ -56,7 +56,7 @@ func GetBalanceRequests(c *gin.Context) {
 	}
 	balanceRequests, err := balance.FindRequestsByStatus(stats)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error12": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, balanceRequests)

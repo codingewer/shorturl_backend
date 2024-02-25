@@ -20,6 +20,7 @@ var urlCollection mongo.Collection
 var userCollection mongo.Collection
 var balanceCollection mongo.Collection
 var seenCollection mongo.Collection
+var helpCollection mongo.Collection
 
 func init() {
 
@@ -44,6 +45,7 @@ func init() {
 	userCollection = *urlDB.Collection("user")
 	balanceCollection = *urlDB.Collection("balance")
 	seenCollection = *urlDB.Collection("seen")
+	helpCollection = *urlDB.Collection("help")
 
 	fmt.Println("Successfully connected and pinged.")
 }
@@ -67,4 +69,8 @@ func getBalanceCollection() (*mongo.Collection, context.Context) {
 
 func getSeenCollection() (*mongo.Collection, context.Context) {
 	return &seenCollection, context.TODO()
+}
+
+func getHelpCollection() (*mongo.Collection, context.Context) {
+	return &helpCollection, context.TODO()
 }

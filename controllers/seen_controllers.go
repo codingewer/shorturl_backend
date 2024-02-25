@@ -33,5 +33,17 @@ func GetUserSeenData(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, data)
+	viewsArray := make([]int, 0)
+	for _, v := range data.Views {
+		viewsArray = append(viewsArray, int(v))
+	}
+	balanceArrays := make([]float32, 0)
+	for _, v := range data.Balance {
+		balanceArrays = append(balanceArrays, v)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"balanceChart": balanceArrays,
+		"viewsChart":   viewsArray,
+	})
 }
