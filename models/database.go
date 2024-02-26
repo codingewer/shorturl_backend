@@ -48,6 +48,23 @@ func init() {
 	helpCollection = *urlDB.Collection("help")
 
 	fmt.Println("Successfully connected and pinged.")
+	admin := User{
+		UserName: "Admin",
+		Password: "sd!24FRt5tgr.3",
+		Balance:  0,
+		Admin:    true,
+		Role:     "admin",
+	}
+	usr, err := admin.FindByUserName("Admin")
+	if err != nil {
+		_, err = admin.CreateUser()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	if usr.Admin {
+		return
+	}
 }
 
 // Veritabanı ve koleksiyon bağlatısını diğer dosyalarda kullanmak için fonksiyonlar

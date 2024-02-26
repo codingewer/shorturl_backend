@@ -71,3 +71,19 @@ func ClaimsToUser(claims jwt.MapClaims) models.ResponseUser {
 		Role:     claims["role"].(string),
 	}
 }
+
+func CheckIsAdmin(c *gin.Context) bool {
+	user := models.User{}
+	claims, err := ValidateUseToken(c)
+	if err != nil {
+		return false
+	}
+	tokenUser, err := user.FindByUserName(claims["username"].(string))
+	if err != nil {
+		return false
+	}
+	if !tokenUser.Admin {
+		return false
+	}
+	return true
+}

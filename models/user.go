@@ -17,6 +17,7 @@ type User struct {
 	Password string             `bson:"password,omitempty"`
 	Balance  float64            `bson:"balance,omitempty"`
 	UrlCount int                `bson:"click_count,omitempty"`
+	Admin    bool               `bson:"admin,omitempty"`
 }
 
 type ResponseUser struct {
@@ -25,6 +26,7 @@ type ResponseUser struct {
 	Role     string             `bson:"role,omitempty"`
 	Balance  float64            `bson:"balance,omitempty"`
 	UrlCount int                `bson:"click_count,omitempty"`
+	Admin    bool               `bson:"admin,omitempty"`
 }
 
 // Kullanıcıyı veri tabanına kaydetme
@@ -33,7 +35,6 @@ func (usr User) CreateUser() (User, error) {
 	if err != nil {
 		return User{}, err
 	}
-	usr.Role = "user"
 	usr.Password = passworHashed
 	ctx := context.TODO()
 	db := getDB()
@@ -43,7 +44,6 @@ func (usr User) CreateUser() (User, error) {
 	}
 	oid, _ := response.InsertedID.(primitive.ObjectID)
 	usr.ID = oid
-	usr.Role = "user"
 	return usr, nil
 }
 

@@ -28,6 +28,8 @@ func CreateUser(c *gin.Context) {
 			return
 		}
 	}
+	user.Role = "user"
+	user.Admin = false
 	//Veri tabanına kaydetme
 	userll, err := user.CreateUser()
 	if err != nil {
@@ -41,6 +43,10 @@ func CreateUser(c *gin.Context) {
 // Bütün kulanıcıları çekmemizi sağlayan fonksiyona http üzerinden erişmeyi sağlayan fonksiyon
 func GetAllUsers(c *gin.Context) {
 	user := models.User{}
+	if !auth.CheckIsAdmin(c) {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok"})
+		return
+	}
 	users, err := user.FindAllUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
