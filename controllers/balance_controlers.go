@@ -47,6 +47,10 @@ func NewBalanceRequests(c *gin.Context) {
 
 func GetBalanceRequests(c *gin.Context) {
 	balance := models.BalanceRequest{}
+	if !auth.CheckIsAdmin(c) {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok!"})
+		return
+	}
 	// get status param
 	status := c.Param("status")
 	stats, err := strconv.ParseBool(status)
@@ -60,4 +64,25 @@ func GetBalanceRequests(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, balanceRequests)
+}
+
+func UpdateBalanceRequest(c *gin.Context) {
+	balance := models.BalanceRequest{}
+	c.BindJSON(&balance)
+	if !auth.CheckIsAdmin(c) {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok!"})
+		return
+	}
+	status := c.Param("status")
+	stats, err := strconv.ParseBool(status)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	err = balance.UpdateRequestStatus(stats)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, balance)
 }

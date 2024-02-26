@@ -40,7 +40,7 @@ func (balanceReq BalanceRequest) CreateNewRequest() (BalanceRequest, error) {
 
 func (balancereq BalanceRequest) UpdateRequestStatus(status bool) error {
 	db, ctx := getBalanceCollection()
-	_, err := db.UpdateOne(ctx, bson.M{"_id": balancereq.ID}, bson.M{"$set": bson.M{"status": balancereq.Status}})
+	_, err := db.UpdateOne(ctx, bson.M{"_id": balancereq.ID}, bson.M{"$set": bson.M{"status": status}})
 	if err != nil {
 		return err
 	}

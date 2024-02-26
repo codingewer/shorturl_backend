@@ -36,6 +36,7 @@ func main() {
 	balance := router.Group("balance")
 	balance.POST("/add", controllers.NewBalanceRequests)
 	balance.GET("/getbystatus/:status", controllers.GetBalanceRequests)
+	balance.PUT("/updatestatus/:status", controllers.UpdateBalanceRequest)
 
 	seen := router.Group("seen")
 	seen.GET("/userseen/:days", controllers.GetUserSeenData)

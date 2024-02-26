@@ -33,6 +33,10 @@ func NewHelpRequest(c *gin.Context) {
 func ChangeHelpRequestStatus(c *gin.Context) {
 	helpReq := models.HelpRequest{}
 	c.BindJSON(&helpReq)
+	if !auth.CheckIsAdmin(c) {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu işlemi yapmak için yetkiniz yok!"})
+		return
+	}
 	param := c.Param("status")
 	status, err := strconv.ParseBool(param)
 	if err != nil {
@@ -49,6 +53,10 @@ func ChangeHelpRequestStatus(c *gin.Context) {
 
 func GetHelpRequestsByStatus(c *gin.Context) {
 	helpReq := models.HelpRequest{}
+	if !auth.CheckIsAdmin(c) {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu işlemi yapmak için yetkiniz yok!"})
+		return
+	}
 	param := c.Param("status")
 	status, err := strconv.ParseBool(param)
 	if err != nil {
