@@ -71,3 +71,19 @@ func GetHelpRequestsByStatus(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, requests)
 }
+
+func GetHelpRequestsByUser(c *gin.Context) {
+	helpReq := models.HelpRequest{}
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+	requests, err := helpReq.FindByUserId(tokenUser.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, requests)
+}

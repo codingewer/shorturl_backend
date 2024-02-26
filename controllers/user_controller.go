@@ -91,7 +91,9 @@ func Login(c *gin.Context) {
 		return
 	}
 	token, _ := auth.GenerateTokenForUser(result)
-	c.JSON(http.StatusOK, token)
+	c.JSON(http.StatusOK, gin.H{"token": token,
+		"userName": result.UserName,
+	})
 }
 
 func UpdatePassword(c *gin.Context) {

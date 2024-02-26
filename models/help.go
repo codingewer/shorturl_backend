@@ -72,3 +72,28 @@ func (help HelpRequest) ChangeStatus(status bool) error {
 	}
 	return nil
 }
+
+//fin by user id
+
+func (help HelpRequest) FindByUserId(userId primitive.ObjectID) ([]HelpRequest, error) {
+	usr := User{}
+	db, ctx := getHelpCollection()
+	var helpRequests []HelpRequest
+	filter := bson.M{"user_id": userId}
+	cursor, err := db.Find(ctx, filter)
+	if err != nil {
+		return helpRequests, err
+	}
+	err = cursor.All(ctx, &helpRequests)
+	if err != nil {
+		return helpRequests, err
+	}
+	for i := range helpRequests {
+		user, err := usr.FindResposeUserByID(helpRequests[i].UserID)
+		if err != nil {
+			return helpRequests, err
+		}
+		helpRequests[i].User = user
+	}
+	return helpRequests, nil
+}

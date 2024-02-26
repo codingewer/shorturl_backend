@@ -42,13 +42,14 @@ func main() {
 	balance.PUT("/updateinfo", controllers.UpdateBalanceInfo)
 	balance.GET("/getbyuserId", controllers.GetBalanceInfo)
 
-	seen := router.Group("seen")
-	seen.GET("/userseen/:days", controllers.GetUserSeenData)
-
 	help := router.Group("help")
 	help.POST("/new", controllers.NewHelpRequest)
 	help.GET("/getbystatus/:status", controllers.GetHelpRequestsByStatus)
+	help.GET("/getbyuser", controllers.GetHelpRequestsByUser)
 	help.PUT("/updatestatus/:status", controllers.ChangeHelpRequestStatus)
+
+	seen := router.Group("seen")
+	seen.GET("/userseen/:days", controllers.GetUserSeenData)
 
 	port := os.Getenv("PORT")
 	if port == "" {
