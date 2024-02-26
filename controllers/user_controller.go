@@ -12,10 +12,9 @@ import (
 // Veritabanına kayeden fonsiyonu çağırıp http ile bağlanmamızı sağlayan fonksiyon
 func CreateUser(c *gin.Context) {
 	user := models.User{}
+	balanceInfo := models.BalanceInfo{}
 	c.BindJSON(&user)
-	//Gelen veriyi User nsnesine dönüştürdük
-	//userr := models.User{}
-	//Kullanıcı adı benzersiz mi diye kontrol edilir
+
 	users, err := user.FindAllUsers()
 	for err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
@@ -36,7 +35,14 @@ func CreateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
+	balanceInfo.UserId = userll.ID
+	userInfoB, err := balanceInfo.CreateBalanceInfo(userll.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
 	userll.Password = ""
+	userll.BalanceInfo = userInfoB
 	c.JSON(http.StatusOK, userll)
 }
 
@@ -86,4 +92,68 @@ func Login(c *gin.Context) {
 	}
 	token, _ := auth.GenerateTokenForUser(result)
 	c.JSON(http.StatusOK, token)
+}
+
+func UpdatePassword(c *gin.Context) {
+	user := models.User{}
+	updateUser := models.UpdatePasswordUser{}
+	c.BindJSON(&updateUser)
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+	result, err := user.FindUserByID(tokenUser.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
+		return
+	}
+	err = models.ComparePasswords(result.Password, updateUser.Password)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Şifre Hatalı"})
+		return
+	}
+	err = user.UpdatePassword(result.ID, updateUser.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"SUCCESS": "Şifre Güncellendi"})
+}
+
+// update user
+func UpdateUser(c *gin.Context) {
+	user := models.User{}
+	c.BindJSON(&user)
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+
+	result, err := user.FindUserByID(tokenUser.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
+		return
+	}
+	users, err := user.FindAllUsers()
+	for err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+
+	for i, _ := range users {
+		if users[i].UserName == user.UserName {
+			c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu kullancı adı kullanılıyor."})
+			return
+		}
+	}
+	err = user.UpdateUser(result.ID, user)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"SUCCESS": "Kullanıcı Güncellendi"})
 }

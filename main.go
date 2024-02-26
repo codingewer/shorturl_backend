@@ -32,11 +32,15 @@ func main() {
 	user.GET("/getall", controllers.GetAllUsers)
 	user.POST("/new", controllers.CreateUser)
 	user.POST("/login", controllers.Login)
+	user.PUT("/update", controllers.UpdateUser)
+	user.PUT("/updatepassword", controllers.UpdatePassword)
 
 	balance := router.Group("balance")
 	balance.POST("/add", controllers.NewBalanceRequests)
 	balance.GET("/getbystatus/:status", controllers.GetBalanceRequests)
 	balance.PUT("/updatestatus/:status", controllers.UpdateBalanceRequest)
+	balance.PUT("/updateinfo", controllers.UpdateBalanceInfo)
+	balance.GET("/getbyuserId", controllers.GetBalanceInfo)
 
 	seen := router.Group("seen")
 	seen.GET("/userseen/:days", controllers.GetUserSeenData)

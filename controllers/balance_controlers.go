@@ -20,7 +20,7 @@ func NewBalanceRequests(c *gin.Context) {
 	}
 	tokenUser := auth.ClaimsToUser(claims)
 	user := models.User{}
-	userFromDB, err := user.FindUserByID(tokenUser.ID)
+	userFromDB, err := user.FindResposeUserByID(tokenUser.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
@@ -85,4 +85,50 @@ func UpdateBalanceRequest(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, balance)
+}
+
+// get info by user id
+func GetBalanceInfo(c *gin.Context) {
+	balance := models.BalanceInfo{}
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+	fmt.Println(tokenUser.ID)
+	balanceInfo, err := balance.FindBalanceInfoByUserId(tokenUser.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, balanceInfo)
+}
+
+// Update balance info by user id
+func UpdateBalanceInfo(c *gin.Context) {
+	balance := models.BalanceInfo{}
+	c.BindJSON(&balance)
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+
+	balancInfofromDB, err := balance.FindBalanceInfoById(balance.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	if balancInfofromDB.UserId != tokenUser.ID {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok!"})
+		return
+	}
+	balanceInfoUpdated, err := balance.UpdateBalanceInfo(tokenUser.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, balanceInfoUpdated)
 }

@@ -21,6 +21,7 @@ var userCollection mongo.Collection
 var balanceCollection mongo.Collection
 var seenCollection mongo.Collection
 var helpCollection mongo.Collection
+var balanceInfoCollection mongo.Collection
 
 func init() {
 
@@ -44,6 +45,7 @@ func init() {
 	urlCollection = *urlDB.Collection("url")
 	userCollection = *urlDB.Collection("user")
 	balanceCollection = *urlDB.Collection("balance")
+	balanceInfoCollection = *urlDB.Collection("balanceinfo")
 	seenCollection = *urlDB.Collection("seen")
 	helpCollection = *urlDB.Collection("help")
 
@@ -82,6 +84,10 @@ func getUserCollection() *mongo.Collection {
 
 func getBalanceCollection() (*mongo.Collection, context.Context) {
 	return &balanceCollection, context.TODO()
+}
+
+func getBalanceInfoCollection() (*mongo.Collection, context.Context) {
+	return &balanceInfoCollection, context.TODO()
 }
 
 func getSeenCollection() (*mongo.Collection, context.Context) {

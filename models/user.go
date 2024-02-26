@@ -11,13 +11,15 @@ import (
 
 // Kullanıcı yapısı
 type User struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	UserName string             `bson:"username,omitempty"`
-	Role     string             `bson:"role,omitempty"`
-	Password string             `bson:"password,omitempty"`
-	Balance  float64            `bson:"balance,omitempty"`
-	UrlCount int                `bson:"click_count,omitempty"`
-	Admin    bool               `bson:"admin,omitempty"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	UserName    string             `bson:"username,omitempty"`
+	Mail        string             `bson:"mail,omitempty"`
+	Role        string             `bson:"role,omitempty"`
+	Password    string             `bson:"password,omitempty"`
+	Balance     float64            `bson:"balance,omitempty"`
+	UrlCount    int                `bson:"click_count,omitempty"`
+	Admin       bool               `bson:"admin,omitempty"`
+	BalanceInfo BalanceInfo        `json:"BalanceInfo"`
 }
 
 type ResponseUser struct {
@@ -27,6 +29,11 @@ type ResponseUser struct {
 	Balance  float64            `bson:"balance,omitempty"`
 	UrlCount int                `bson:"click_count,omitempty"`
 	Admin    bool               `bson:"admin,omitempty"`
+}
+
+type UpdatePasswordUser struct {
+	Password    string `json:"password"`
+	NewPassword string `json:"newPassword"`
 }
 
 // Kullanıcıyı veri tabanına kaydetme
@@ -62,7 +69,7 @@ func (user User) FindByUserName(username string) (User, error) {
 	return result, nil
 }
 
-func (user User) FindUserByID(id primitive.ObjectID) (ResponseUser, error) {
+func (user User) FindResposeUserByID(id primitive.ObjectID) (ResponseUser, error) {
 	db := getUserCollection()
 	ctx := context.TODO()
 	filter := bson.M{"_id": id}
@@ -71,6 +78,19 @@ func (user User) FindUserByID(id primitive.ObjectID) (ResponseUser, error) {
 	err := db.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		return ResponseUser{}, err
+	}
+
+	return result, nil
+}
+func (user User) FindUserByID(id primitive.ObjectID) (User, error) {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"_id": id}
+
+	var result User
+	err := db.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return User{}, err
 	}
 
 	return result, nil
@@ -178,6 +198,19 @@ func (user User) UpdatePassword(userId primitive.ObjectID, newPassword string) e
 
 	_, err = db.UpdateOne(ctx, filter, update)
 
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// func update user by id
+func (user User) UpdateUser(userID primitive.ObjectID, updatedUser User) error {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"_id": userID}
+	update := bson.D{{"$set", bson.D{{"username", updatedUser.UserName}, {"mail", updatedUser.Mail}}}}
+	_, err := db.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
 	}

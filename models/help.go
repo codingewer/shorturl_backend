@@ -30,7 +30,7 @@ func (help HelpRequest) NewHelpRequest(userId primitive.ObjectID) (HelpRequest, 
 	if err != nil {
 		return help, err
 	}
-	responseUser, err := user.FindUserByID(userId)
+	responseUser, err := user.FindResposeUserByID(userId)
 	help.ID = response.InsertedID.(primitive.ObjectID)
 	help.User = responseUser
 	return help, nil
@@ -51,7 +51,7 @@ func (help HelpRequest) FindByStatus(status bool) ([]HelpRequest, error) {
 		return helpRequests, err
 	}
 	for i := range helpRequests {
-		user, err := usr.FindUserByID(helpRequests[i].UserID)
+		user, err := usr.FindResposeUserByID(helpRequests[i].UserID)
 		if err != nil {
 			return helpRequests, err
 		}
