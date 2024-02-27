@@ -82,7 +82,7 @@ func (help HelpRequest) FindByUserId(userId primitive.ObjectID) ([]HelpRequest, 
 	db, ctx := getHelpCollection()
 	var helpRequests []HelpRequest
 	//find new to old
-	opts := options.Find().SetSort(bson.D{{"click_count", -1}})
+	opts := options.Find().SetSort(bson.D{{"createdAt", -1}})
 	filter := bson.M{"user_id": userId}
 	cursor, err := db.Find(ctx, filter, opts)
 	if err != nil {
