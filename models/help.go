@@ -5,6 +5,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type HelpRequest struct {
@@ -80,8 +81,10 @@ func (help HelpRequest) FindByUserId(userId primitive.ObjectID) ([]HelpRequest, 
 	usr := User{}
 	db, ctx := getHelpCollection()
 	var helpRequests []HelpRequest
+	//find new to old
+	opts := options.Find().SetSort(bson.D{{"click_count", -1}})
 	filter := bson.M{"user_id": userId}
-	cursor, err := db.Find(ctx, filter)
+	cursor, err := db.Find(ctx, filter, opts)
 	if err != nil {
 		return helpRequests, err
 	}
