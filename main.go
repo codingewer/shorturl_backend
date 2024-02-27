@@ -16,8 +16,9 @@ func main() {
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
 	config.AllowCredentials = true
+	config.AllowHeaders = []string{"Content-Type", "Authorization"}
 	//config.AllowOrigins = []string{"http://localhost:3001"}
-	router.Use(cors.Default())
+	router.Use(cors.New(config))
 
 	url := router.Group("url")
 	url.POST("/add", controllers.ShortLink)

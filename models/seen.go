@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,17 +21,19 @@ type ChartData struct {
 }
 
 func (seen Seen) NewSeen(userID, urlID primitive.ObjectID) error {
+	date := time.Now()
 	seen = Seen{
 		ID:        primitive.NewObjectID(),
 		UserID:    userID,
 		UrlID:     urlID,
-		CreatedAt: primitive.NewDateTimeFromTime(time.Now()),
+		CreatedAt: primitive.NewDateTimeFromTime(date.AddDate(0, 0, 10)),
 	}
 	db, ctx := getSeenCollection()
 	response, err := db.InsertOne(ctx, seen)
 	if err != nil {
 		return err
 	}
+	fmt.Println("response: ", userID)
 	seen.ID = response.InsertedID.(primitive.ObjectID)
 	return nil
 }

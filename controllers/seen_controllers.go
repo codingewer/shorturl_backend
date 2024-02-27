@@ -16,10 +16,6 @@ func GetUserSeenData(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "gün verisi geçersiz formatta"})
 		return
 	}
-	if daysInt == 0 {
-		daysInt = 7
-	}
-
 	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -32,18 +28,11 @@ func GetUserSeenData(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	viewsArray := make([]int, 0)
-	for _, v := range data.Views {
-		viewsArray = append(viewsArray, int(v))
-	}
-	balanceArrays := make([]float32, 0)
-	for _, v := range data.Balance {
-		balanceArrays = append(balanceArrays, v)
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"balanceChart": balanceArrays,
-		"viewsChart":   viewsArray,
+		"balanceChart": data.Balance,
+		"viewsChart":   data.Views,
+		"data":         data,
+		"user":         tokenUser,
+		"days":         days,
 	})
 }

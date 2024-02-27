@@ -55,7 +55,7 @@ func (usr User) CreateUser() (User, error) {
 }
 
 // Kullanıcıyı kullanıcı adı ile alma
-func (user User) FindByUserName(username string) (User, error) {
+func (user User) FindUserByUserName(username string) (User, error) {
 	db := getUserCollection()
 	ctx := context.TODO()
 	filter := bson.M{"username": username}

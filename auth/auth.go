@@ -78,7 +78,7 @@ func CheckIsAdmin(c *gin.Context) bool {
 	if err != nil {
 		return false
 	}
-	tokenUser, err := user.FindByUserName(claims["username"].(string))
+	tokenUser, err := user.FindUserByUserName(claims["username"].(string))
 	if err != nil {
 		return false
 	}

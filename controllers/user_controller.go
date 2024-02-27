@@ -66,7 +66,7 @@ func GetAllUsers(c *gin.Context) {
 func GetByUserName(c *gin.Context) {
 	user := models.User{}
 	username := c.Param("username")
-	result, err := user.FindByUserName(username)
+	result, err := user.FindUserByUserName(username)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
@@ -80,7 +80,7 @@ func Login(c *gin.Context) {
 	c.BindJSON(&user)
 
 	//Kullanıcı adı ve şifre kontrol edilir
-	result, err := user.FindByUserName(user.UserName)
+	result, err := user.FindUserByUserName(user.UserName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
 		return
@@ -91,8 +91,15 @@ func Login(c *gin.Context) {
 		return
 	}
 	token, _ := auth.GenerateTokenForUser(result)
+	responseUser := models.ResponseUser{
+		UserName: result.UserName,
+		Admin:    result.Admin,
+		Role:     result.Role,
+		Balance:  result.Balance,
+		UrlCount: result.UrlCount,
+	}
 	c.JSON(http.StatusOK, gin.H{"token": token,
-		"userName": result.UserName,
+		"user": responseUser,
 	})
 }
 

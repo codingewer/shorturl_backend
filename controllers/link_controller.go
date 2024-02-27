@@ -101,7 +101,7 @@ func GetByUrl(c *gin.Context) {
 		return
 	}
 	seen := models.Seen{}
-	err = seen.NewSeen(url.UserID, result.ID)
+	err = seen.NewSeen(result.UserID, result.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
@@ -139,7 +139,7 @@ func DeleteByID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"sdsd": "sfsf"})
+	c.JSON(http.StatusOK, nil)
 }
 
 // kullanıcı adına göre veri tabanında linkleri çeken fonksiyonu http üzerinden bağlanmamızı sağlayan fonksiyon

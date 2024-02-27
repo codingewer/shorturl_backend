@@ -57,7 +57,7 @@ func init() {
 		Admin:    true,
 		Role:     "admin",
 	}
-	usr, err := admin.FindByUserName("Admin")
+	usr, err := admin.FindUserByUserName("Admin")
 	if err != nil {
 		_, err = admin.CreateUser()
 		if err != nil {
