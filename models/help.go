@@ -9,8 +9,9 @@ import (
 
 type HelpRequest struct {
 	ID        primitive.ObjectID `bson:"_id" json:"ID"`
-	Title     string             `bson:"title" json:"title"`
-	Content   string             `bson:"content" json:"content"`
+	Title     string             `bson:"title" json:"Title"`
+	Content   string             `bson:"content" json:"Content"`
+	Answer    string             `bson:"answer" json:"Answer"`
 	UserID    primitive.ObjectID `bson:"user_id" json:"userID"`
 	User      ResponseUser       `json:"user"`
 	CreatedAt primitive.DateTime `bson:"createdAt" json:"createdAt"`
