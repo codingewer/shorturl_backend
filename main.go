@@ -15,22 +15,18 @@ func main() {
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
+	config.AllowAllOrigins = true
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
 	config.AllowCredentials = true
 	config.AllowHeaders = []string{"Content-Type", "Authorization"}
-	config.AllowOrigins = []string{"*"}
-	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"*"}, // Tüm kaynaklara izin vermek için
-		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowHeaders: []string{"Content-Type", "Authorization"},
-	}))
+	router.Use(cors.New(config))
 
 	url := router.Group("url")
 	url.POST("/add", controllers.ShortLink)
 	url.GET("/getall", controllers.GetAll)
 	url.DELETE("/delete/:id", controllers.DeleteByID)
 	url.GET("/get/:shortenedurl", controllers.GetByUrl)
-	url.GET("/getbycreatedby/", controllers.GetByCreatedBy)
+	url.GET("/getbycreatedby", controllers.GetByCreatedBy)
 
 	//Kullanıcılar için api linkleri
 	user := router.Group("user")
