@@ -17,7 +17,6 @@ func main() {
 	config.AllowAllOrigins = true
 	config.AllowCredentials = true
 	config.AllowHeaders = []string{"Content-Type", "Authorization"}
-	config.AllowOrigins = []string{"*"}
 	router.Use(cors.New(config))
 
 	url := router.Group("url")
