@@ -43,6 +43,7 @@ func main() {
 	balance.GET("/getbyuser", controllers.GetBalanceRequestsById)
 	balance.PUT("/info/updateinfo", controllers.UpdateBalanceInfo)
 	balance.GET("/info/getbyuserId", controllers.GetBalanceInfo)
+	balance.GET("/info/getall", controllers.FindAllBalanceInfo)
 
 	help := router.Group("help")
 	help.POST("/new", controllers.NewHelpRequest)

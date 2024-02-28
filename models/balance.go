@@ -81,10 +81,7 @@ func (balancereq BalanceRequest) FindRequestsByStatus(status bool) ([]BalanceReq
 	}
 	for i, _ := range results {
 		user := User{}
-		userr, err := user.FindResposeUserByID(results[i].UserId)
-		if err != nil {
-			return []BalanceRequest{}, err
-		}
+		userr, _ := user.FindResposeUserByID(results[i].UserId)
 		results[i].User = userr
 	}
 	return results, nil
@@ -129,7 +126,8 @@ func (balanceInfo BalanceInfo) UpdateBalanceInfo(userId primitive.ObjectID) (Bal
 // find balance info by User id
 func (balanceInfo BalanceInfo) FindBalanceInfoByUserId(userId primitive.ObjectID) (BalanceInfo, error) {
 	db, ctx := getBalanceInfoCollection()
-	err := db.FindOne(ctx, bson.M{"user_id": userId}).Decode(&balanceInfo)
+	filter := bson.M{"user_id": userId}
+	err := db.FindOne(ctx, filter).Decode(&balanceInfo)
 	if err != nil {
 		return BalanceInfo{}, err
 	}

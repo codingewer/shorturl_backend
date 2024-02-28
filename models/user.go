@@ -23,12 +23,13 @@ type User struct {
 }
 
 type ResponseUser struct {
-	ID       primitive.ObjectID `bson:"_id,omitempty"`
-	UserName string             `bson:"username,omitempty"`
-	Role     string             `bson:"role,omitempty"`
-	Balance  float64            `bson:"balance,omitempty"`
-	UrlCount int                `bson:"click_count,omitempty"`
-	Admin    bool               `bson:"admin,omitempty"`
+	ID          primitive.ObjectID `bson:"_id,omitempty"`
+	UserName    string             `bson:"username,omitempty"`
+	Role        string             `bson:"role,omitempty"`
+	Balance     float64            `bson:"balance,omitempty"`
+	UrlCount    int                `bson:"click_count,omitempty"`
+	Admin       bool               `bson:"admin,omitempty"`
+	BalanceInfo BalanceInfo        `json:"BalanceInfo"`
 }
 
 type UpdatePasswordUser struct {
@@ -79,7 +80,12 @@ func (user User) FindResposeUserByID(id primitive.ObjectID) (ResponseUser, error
 	if err != nil {
 		return ResponseUser{}, err
 	}
-
+	binfoo := BalanceInfo{}
+	binfo, err := binfoo.FindBalanceInfoByUserId(id)
+	if err != nil {
+		return ResponseUser{}, err
+	}
+	result.BalanceInfo = binfo
 	return result, nil
 }
 func (user User) FindUserByID(id primitive.ObjectID) (User, error) {
@@ -92,7 +98,12 @@ func (user User) FindUserByID(id primitive.ObjectID) (User, error) {
 	if err != nil {
 		return User{}, err
 	}
-
+	binfoo := BalanceInfo{}
+	binfo, err := binfoo.FindBalanceInfoByUserId(id)
+	if err != nil {
+		return User{}, err
+	}
+	result.BalanceInfo = binfo
 	return result, nil
 }
 

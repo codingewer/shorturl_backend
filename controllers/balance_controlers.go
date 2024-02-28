@@ -158,3 +158,13 @@ func UpdateBalanceInfo(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, balanceInfoUpdated)
 }
+
+func FindAllBalanceInfo(c *gin.Context) {
+	balance := models.BalanceInfo{}
+	balanceInfo, err := balance.FindAllBalanceInfo()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, balanceInfo)
+}
