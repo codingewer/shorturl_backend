@@ -40,8 +40,9 @@ func main() {
 	balance.POST("/add", controllers.NewBalanceRequests)
 	balance.GET("/getbystatus/:status", controllers.GetBalanceRequests)
 	balance.PUT("/updatestatus/:status", controllers.UpdateBalanceRequest)
-	balance.PUT("/updateinfo", controllers.UpdateBalanceInfo)
-	balance.GET("/getbyuserId", controllers.GetBalanceInfo)
+	balance.GET("/getbyuser", controllers.GetBalanceRequestsById)
+	balance.PUT("/info/updateinfo", controllers.UpdateBalanceInfo)
+	balance.GET("/info/getbyuserId", controllers.GetBalanceInfo)
 
 	help := router.Group("help")
 	help.POST("/new", controllers.NewHelpRequest)
