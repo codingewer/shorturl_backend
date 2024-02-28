@@ -14,8 +14,7 @@ func main() {
 	//Url için api linkleri
 
 	config := cors.DefaultConfig()
-	config.AllowAllOrigins = true
-	config.AllowAllOrigins = true
+	config.AllowOrigins = []string{"*"}
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
 	config.AllowCredentials = true
 	config.AllowHeaders = []string{"Content-Type", "Authorization"}
