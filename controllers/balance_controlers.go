@@ -125,7 +125,7 @@ func GetBalanceInfo(c *gin.Context) {
 	fmt.Println(tokenUser.ID)
 	balanceInfo, err := balance.FindBalanceInfoByUserId(tokenUser.ID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error(), "id": tokenUser.ID})
 		return
 	}
 	c.JSON(http.StatusOK, balanceInfo)
