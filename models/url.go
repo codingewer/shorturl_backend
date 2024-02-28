@@ -101,9 +101,10 @@ func (url Url) FindByID(id primitive.ObjectID) (Url, error) {
 func (url Url) FindByCreatedBy(username string) ([]Url, error) {
 	db := getUrlCollection()
 	ctx := context.TODO()
+	opts := options.Find().SetSort(bson.D{{"created_at", -1}})
 	filter := bson.M{"created_by": username}
 
-	cursor, err := db.Find(ctx, filter)
+	cursor, err := db.Find(ctx, filter, opts)
 	if err != nil {
 		return []Url{}, err
 	}
