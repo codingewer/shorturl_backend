@@ -15,9 +15,15 @@ func main() {
 
 	config := cors.DefaultConfig()
 	config.AllowAllOrigins = true
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
 	config.AllowCredentials = true
 	config.AllowHeaders = []string{"Content-Type", "Authorization"}
-	router.Use(cors.New(config))
+	config.AllowOrigins = []string{"*"}
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"}, // Tüm kaynaklara izin vermek için
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Content-Type", "Authorization"},
+	}))
 
 	url := router.Group("url")
 	url.POST("/add", controllers.ShortLink)
