@@ -29,7 +29,7 @@ func main() {
 
 	//Kullanıcılar için api linkleri
 	user := router.Group("user")
-	user.GET("/get/:username", controllers.GetByUserName)
+	user.GET("/getbyId/", controllers.GetUserByID)
 	user.GET("/getall", controllers.GetAllUsers)
 	user.POST("/new", controllers.CreateUser)
 	user.POST("/login", controllers.Login)

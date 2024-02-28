@@ -63,12 +63,17 @@ func GetAllUsers(c *gin.Context) {
 }
 
 // Kullanıcı adına göre kullanıcıyı çekmemizi sağlayan fonksiyona http üzerinden erişmeyi sağlayan fonksiyon
-func GetByUserName(c *gin.Context) {
+func GetUserByID(c *gin.Context) {
 	user := models.User{}
-	username := c.Param("username")
-	result, err := user.FindUserByUserName(username)
+	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+	result, err := user.FindUserByID(tokenUser.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
 		return
 	}
 	result.Password = ""
