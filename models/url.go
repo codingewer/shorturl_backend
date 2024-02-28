@@ -98,11 +98,11 @@ func (url Url) FindByID(id primitive.ObjectID) (Url, error) {
 }
 
 // Link sahibinin kullanıcı adına göre linkleri çekme
-func (url Url) FindByCreatedBy(username string) ([]Url, error) {
+func (url Url) FindByCreatedBy(id primitive.ObjectID) ([]Url, error) {
 	db := getUrlCollection()
 	ctx := context.TODO()
 	opts := options.Find().SetSort(bson.D{{"created_at", -1}})
-	filter := bson.M{"created_by": username}
+	filter := bson.M{"user_id": id}
 
 	cursor, err := db.Find(ctx, filter, opts)
 	if err != nil {
