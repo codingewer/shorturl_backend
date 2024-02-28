@@ -26,7 +26,7 @@ func (seen Seen) NewSeen(userID, urlID primitive.ObjectID) error {
 		ID:        primitive.NewObjectID(),
 		UserID:    userID,
 		UrlID:     urlID,
-		CreatedAt: primitive.NewDateTimeFromTime(date.AddDate(0, 0, 10)),
+		CreatedAt: primitive.NewDateTimeFromTime(date),
 	}
 	db, ctx := getSeenCollection()
 	response, err := db.InsertOne(ctx, seen)
