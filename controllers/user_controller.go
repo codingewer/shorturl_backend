@@ -71,6 +71,7 @@ func GetByUserName(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
+	result.Password = ""
 	c.JSON(http.StatusOK, result)
 }
 
