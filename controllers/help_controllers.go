@@ -37,13 +37,7 @@ func ChangeHelpRequestStatus(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu işlemi yapmak için yetkiniz yok!"})
 		return
 	}
-	param := c.Param("status")
-	status, err := strconv.ParseBool(param)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
-		return
-	}
-	err = helpReq.ChangeStatus(status)
+	err := helpReq.ChangeStatus()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return

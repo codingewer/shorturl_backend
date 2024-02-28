@@ -64,10 +64,10 @@ func (help HelpRequest) FindByStatus(status bool) ([]HelpRequest, error) {
 
 //Change status
 
-func (help HelpRequest) ChangeStatus(status bool) error {
+func (help HelpRequest) ChangeStatus() error {
 	db, ctx := getHelpCollection()
 	filter := bson.M{"_id": help.ID}
-	update := bson.M{"$set": bson.M{"status": status}}
+	update := bson.M{"$set": bson.M{"status": help.Status, "answer": help.Answer}}
 	_, err := db.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
