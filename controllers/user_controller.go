@@ -113,6 +113,10 @@ func UpdatePassword(c *gin.Context) {
 	user := models.User{}
 	updateUser := models.UpdatePasswordUser{}
 	c.BindJSON(&updateUser)
+	if updateUser.NewPassword == "" && updateUser.Password == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Lütfen şifre giriniz"})
+		return
+	}
 	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
