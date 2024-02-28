@@ -153,11 +153,12 @@ func UpdateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
-
-	for i, _ := range users {
-		if users[i].UserName == user.UserName {
-			c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu kullancı adı kullanılıyor."})
-			return
+	if user.UserName != result.UserName {
+		for i, _ := range users {
+			if users[i].UserName == user.UserName {
+				c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu kullancı adı kullanılıyor."})
+				return
+			}
 		}
 	}
 	err = user.UpdateUser(result.ID, user)
