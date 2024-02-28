@@ -147,11 +147,10 @@ func GetByCreatedBy(c *gin.Context) {
 	url := models.Url{}
 	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		c.JSON(http.StatusUnauthorized, gin.H{"ERROR": err.Error()})
 		return
 	}
 	tokenUser := auth.ClaimsToUser(claims)
-	c.BindJSON(url)
 	result, err := url.FindByCreatedBy(tokenUser.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
