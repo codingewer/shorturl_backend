@@ -65,17 +65,10 @@ func GetBalanceRequests(c *gin.Context) {
 	}
 	for i, _ := range balanceRequests {
 		usr := models.User{}
-		user, err := usr.FindResposeUserByID(balanceRequests[i].UserId)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
-			return
-		}
+		user, _ := usr.FindResposeUserByID(balanceRequests[i].UserId)
 		balanceRequests[i].User = user
 		balanceİnfo := models.BalanceInfo{}
-		balance, err := balanceİnfo.FindBalanceInfoByUserId(balanceRequests[i].UserId)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
-		}
+		balance, _ := balanceİnfo.FindBalanceInfoByUserId(balanceRequests[i].UserId)
 		balanceRequests[i].User.BalanceInfo = balance
 	}
 	c.JSON(http.StatusOK, balanceRequests)
@@ -95,11 +88,7 @@ func GetBalanceRequestsById(c *gin.Context) {
 	tokenUser := auth.ClaimsToUser(claims)
 	user := models.User{}
 	userFromDB, err := user.FindResposeUserByID(tokenUser.ID)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
-		return
-	}
-	balanceRequests, err := balance.FindRequestsByUserID(userFromDB.ID)
+	balanceRequests, _ := balance.FindRequestsByUserID(userFromDB.ID)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
