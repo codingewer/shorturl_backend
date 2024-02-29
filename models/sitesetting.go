@@ -8,6 +8,7 @@ import (
 type Settings struct {
 	ID               primitive.ObjectID `bson:"_id"`
 	SiteName         string             `bson:"site_name"`
+	AboutUs          string             `bson:"about_us"`
 	AdSlot           string             `bson:"ad_slot"`
 	AdClient         string             `bson:"ad_client"`
 	RevenuePerClick  float64            `bson:"revenue_per_click"`

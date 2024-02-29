@@ -71,6 +71,7 @@ func init() {
 
 	siteSettings := Settings{
 		SiteName:         "short-url",
+		AboutUs:          "We Short Urls",
 		AdSlot:           "1232435",
 		AdClient:         "ca-pub-123we234rwefwe",
 		RevenuePerClick:  0.2,
