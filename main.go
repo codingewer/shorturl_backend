@@ -47,7 +47,7 @@ func main() {
 
 	help := router.Group("help")
 	help.POST("/new", controllers.NewHelpRequest)
-	help.GET("/getbystatus/:status", controllers.GetHelpRequestsByStatus)
+	help.GET("/getbystatus/:stats", controllers.GetHelpRequestsByStatus)
 	help.GET("/getbyuser", controllers.GetHelpRequestsByUser)
 	help.PUT("/updatestatus/:status", controllers.ChangeHelpRequestStatus)
 

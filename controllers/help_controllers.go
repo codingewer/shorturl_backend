@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"short-link/auth"
 	"short-link/models"
@@ -51,17 +52,28 @@ func GetHelpRequestsByStatus(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu işlemi yapmak için yetkiniz yok!"})
 		return
 	}
-	param := c.Param("status")
-	status, err := strconv.ParseBool(param)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
-		return
-	}
-
+	param := c.Param("stats")
+	status, _ := strconv.ParseBool(param)
+	fmt.Println(status)
 	requests, err := helpReq.FindByStatus(status)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
+	}
+	for i, _ := range requests {
+		usr := models.User{}
+		user, err := usr.FindResposeUserByID(requests[i].UserID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+			return
+		}
+		requests[i].User = user
+	}
+
+	for i, _ := range requests {
+		balanceİnfo := models.BalanceInfo{}
+		balance, _ := balanceİnfo.FindBalanceInfoByUserId(requests[i].UserID)
+		requests[i].User.BalanceInfo = balance
 	}
 	c.JSON(http.StatusOK, requests)
 }

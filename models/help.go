@@ -33,6 +33,9 @@ func (help HelpRequest) NewHelpRequest(userId primitive.ObjectID) (HelpRequest, 
 		return help, err
 	}
 	responseUser, err := user.FindResposeUserByID(userId)
+	if err != nil {
+		return help, err
+	}
 	help.ID = response.InsertedID.(primitive.ObjectID)
 	help.User = responseUser
 	return help, nil
@@ -40,24 +43,16 @@ func (help HelpRequest) NewHelpRequest(userId primitive.ObjectID) (HelpRequest, 
 
 // Find by status
 func (help HelpRequest) FindByStatus(status bool) ([]HelpRequest, error) {
-	usr := User{}
 	db, ctx := getHelpCollection()
 	var helpRequests []HelpRequest
-	filter := bson.M{"status": status}
-	cursor, err := db.Find(ctx, filter)
+	opts := options.Find().SetSort(bson.D{{"created_at", -1}})
+	cursor, err := db.Find(ctx, bson.M{"status": status}, opts)
 	if err != nil {
 		return helpRequests, err
 	}
 	err = cursor.All(ctx, &helpRequests)
 	if err != nil {
 		return helpRequests, err
-	}
-	for i := range helpRequests {
-		user, err := usr.FindResposeUserByID(helpRequests[i].UserID)
-		if err != nil {
-			return helpRequests, err
-		}
-		helpRequests[i].User = user
 	}
 	return helpRequests, nil
 }
@@ -78,7 +73,6 @@ func (help HelpRequest) ChangeStatus() error {
 //fin by user id
 
 func (help HelpRequest) FindByUserId(userId primitive.ObjectID) ([]HelpRequest, error) {
-	usr := User{}
 	db, ctx := getHelpCollection()
 	var helpRequests []HelpRequest
 	//find new to old
@@ -91,13 +85,6 @@ func (help HelpRequest) FindByUserId(userId primitive.ObjectID) ([]HelpRequest, 
 	err = cursor.All(ctx, &helpRequests)
 	if err != nil {
 		return helpRequests, err
-	}
-	for i := range helpRequests {
-		user, err := usr.FindResposeUserByID(helpRequests[i].UserID)
-		if err != nil {
-			return helpRequests, err
-		}
-		helpRequests[i].User = user
 	}
 	return helpRequests, nil
 }

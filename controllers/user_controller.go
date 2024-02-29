@@ -98,6 +98,7 @@ func Login(c *gin.Context) {
 	}
 	token, _ := auth.GenerateTokenForUser(result)
 	responseUser := models.ResponseUser{
+		ID:       result.ID,
 		UserName: result.UserName,
 		Admin:    result.Admin,
 		Role:     result.Role,

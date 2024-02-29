@@ -70,41 +70,27 @@ func (user User) FindUserByUserName(username string) (User, error) {
 	return result, nil
 }
 
-func (user User) FindResposeUserByID(id primitive.ObjectID) (ResponseUser, error) {
+func (user *User) FindResposeUserByID(id primitive.ObjectID) (ResponseUser, error) {
 	db := getUserCollection()
 	ctx := context.TODO()
 	filter := bson.M{"_id": id}
-
 	var result ResponseUser
 	err := db.FindOne(ctx, filter).Decode(&result)
 	if err != nil {
 		return ResponseUser{}, err
 	}
-	binfoo := BalanceInfo{}
-	binfo, err := binfoo.FindBalanceInfoByUserId(id)
-	if err != nil {
-		return ResponseUser{}, err
-	}
-	result.BalanceInfo = binfo
 	return result, nil
 }
 func (user User) FindUserByID(id primitive.ObjectID) (User, error) {
 	db := getUserCollection()
 	ctx := context.TODO()
-	filter := bson.M{"_id": id}
 
-	var result User
-	err := db.FindOne(ctx, filter).Decode(&result)
+	filter := bson.M{"_id": id}
+	err := db.FindOne(ctx, filter).Decode(&user)
 	if err != nil {
 		return User{}, err
 	}
-	binfoo := BalanceInfo{}
-	binfo, err := binfoo.FindBalanceInfoByUserId(id)
-	if err != nil {
-		return User{}, err
-	}
-	result.BalanceInfo = binfo
-	return result, nil
+	return user, nil
 }
 
 // Kullancıları en çok link oluşturanlara göre alma
