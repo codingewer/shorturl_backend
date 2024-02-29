@@ -36,3 +36,20 @@ func (s Settings) FindBySiteName(siteName string) (*Settings, error) {
 	}
 	return &s, nil
 }
+
+// update site settings by id
+func (s Settings) UpdateSettings(id primitive.ObjectID) (*Settings, error) {
+	db, ctx := getSiteSettingsCollection()
+	filer := bson.M{"_id": id}
+	update := bson.M{
+		"about_us":          s.AboutUs,
+		"ad_slot":           s.AdSlot,
+		"ad_client":         s.AdClient,
+		"revenue_per_click": s.RevenuePerClick,
+		"withdrawn_balance": s.WithdrawnBalance}
+	_, err := db.UpdateOne(ctx, filer, bson.M{"$set": update})
+	if err != nil {
+		return &Settings{}, err
+	}
+	return &s, nil
+}
