@@ -15,17 +15,10 @@ func CreateUser(c *gin.Context) {
 	balanceInfo := models.BalanceInfo{}
 	c.BindJSON(&user)
 
-	users, err := user.FindAllUsers()
-	for err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+	userfromdb, _ := user.FindUserByUserName(user.UserName)
+	if userfromdb.UserName != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Kullanıcı adı zaten kullanılıyor"})
 		return
-	}
-
-	for i, _ := range users {
-		if users[i].UserName == user.UserName {
-			c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu kullancı adı kullanılıyor."})
-			return
-		}
 	}
 	user.Role = "user"
 	user.Admin = false
@@ -35,15 +28,26 @@ func CreateUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
+
 	balanceInfo.UserId = userll.ID
 	userInfoB, err := balanceInfo.CreateBalanceInfo(userll.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
-	userll.Password = ""
-	userll.BalanceInfo = userInfoB
-	c.JSON(http.StatusOK, userll)
+	token, _ := auth.GenerateTokenForUser(userll)
+	responseUser := models.ResponseUser{
+		ID:          userll.ID,
+		UserName:    userll.UserName,
+		Admin:       userll.Admin,
+		Role:        userll.Role,
+		Balance:     userll.Balance,
+		UrlCount:    userll.UrlCount,
+		BalanceInfo: userInfoB,
+	}
+	c.JSON(http.StatusOK, gin.H{"token": token,
+		"user": responseUser,
+	})
 }
 
 // Bütün kulanıcıları çekmemizi sağlayan fonksiyona http üzerinden erişmeyi sağlayan fonksiyon
