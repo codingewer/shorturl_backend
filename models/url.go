@@ -12,7 +12,6 @@ import (
 type Url struct {
 	ID           primitive.ObjectID `bson:"_id,omitempty"`
 	UserID       primitive.ObjectID `bson:"user_id,omitempty"`
-	Title        string             `bson:"title,omitempty"`
 	Description  string             `bson:"description,omitempty"`
 	OrginalUrl   string             `bson:"orginal_url,omitempty" json:"OrginalUrl"`
 	ShortenedUrl string             `bson:"shortened_url,CreatedBy"`
@@ -126,6 +125,19 @@ func (url Url) DeleteByID(id primitive.ObjectID) error {
 	if err != nil {
 		return err
 
+	}
+	return nil
+}
+
+// update url
+func (url Url) Update(id primitive.ObjectID) error {
+	db := getUrlCollection()
+	ctx := context.TODO()
+	filter := bson.M{"_id": id}
+	update := bson.D{{"$set", bson.D{{"shortened_url", url.ShortenedUrl}, {"description", url.Description}}}}
+	_, err := db.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
 	}
 	return nil
 }

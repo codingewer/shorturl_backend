@@ -23,11 +23,6 @@ func ShortLink(c *gin.Context) {
 	}
 	tokenUser := auth.ClaimsToUser(claims)
 	//kullanıcı isim vermezse rastgele 10 karakterlik benzersiz bir isim oluştrulur
-	urls, err := url.FindAllUrl()
-	if err != nil {
-		c.JSON(http.StatusUnprocessableEntity, gin.H{"ERROR": "Bu zaten var"})
-		return
-	}
 
 	if url.OrginalUrl[0:8] != "https://" {
 		if url.OrginalUrl[0:7] == "http://" {
@@ -36,29 +31,14 @@ func ShortLink(c *gin.Context) {
 			url.OrginalUrl = "https://" + url.OrginalUrl
 		}
 	}
-	var shortenrdUrl string
 	if url.ShortenedUrl == "" {
-		for i, _ := range urls {
-			shortenrdUrl = models.GenerateString(10)
-			if shortenrdUrl == urls[i].ShortenedUrl {
-				url.ShortenedUrl = models.GenerateString(10)
-				break
-			} else {
-				url.ShortenedUrl = shortenrdUrl
-			}
+		url.ShortenedUrl = models.GenerateString(10)
+	}
 
-		}
-	} else {
-		for i, _ := range urls {
-			if len(url.ShortenedUrl) > 10 {
-				c.JSON(http.StatusUnprocessableEntity, gin.H{"ERROR": "10 karakterden uzun olamaz"})
-				return
-			}
-			if urls[i].ShortenedUrl == url.ShortenedUrl {
-				c.JSON(http.StatusUnprocessableEntity, gin.H{"ERROR": "Bu zaten var"})
-				return
-			}
-		}
+	urlFromDB, _ := url.FindByUrl(url.ShortenedUrl)
+	if urlFromDB.ShortenedUrl == url.ShortenedUrl {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu link zaten mevcut"})
+		return
 	}
 	//kullanıcını olup olmadığı ve kullanıcı link oluştruma seviyesi artırılır
 	err = user.NewLinkCount(tokenUser.UserName)
@@ -157,4 +137,30 @@ func GetByCreatedBy(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, result)
+}
+
+func UpdateUrl(c *gin.Context) {
+	url := models.Url{}
+	c.BindJSON(&url)
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+	urll, err := url.FindByID(url.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	if urll.UserID != tokenUser.ID {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Yetkiniz yok"})
+		return
+	}
+	err = url.Update(url.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "link başarıyla güncellendi"})
 }

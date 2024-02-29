@@ -22,6 +22,8 @@ var balanceCollection mongo.Collection
 var seenCollection mongo.Collection
 var helpCollection mongo.Collection
 var balanceInfoCollection mongo.Collection
+var siteSettingsCollection mongo.Collection
+var faqCollection mongo.Collection
 
 func init() {
 
@@ -48,6 +50,8 @@ func init() {
 	balanceInfoCollection = *urlDB.Collection("balanceinfo")
 	seenCollection = *urlDB.Collection("seen")
 	helpCollection = *urlDB.Collection("help")
+	siteSettingsCollection = *urlDB.Collection("sitesettings")
+	faqCollection = *urlDB.Collection("faq")
 
 	fmt.Println("Successfully connected and pinged.")
 	admin := User{
@@ -57,15 +61,26 @@ func init() {
 		Admin:    true,
 		Role:     "admin",
 	}
-	usr, err := admin.FindUserByUserName("Admin")
+	_, err = admin.FindUserByUserName("Admin")
 	if err != nil {
 		_, err = admin.CreateUser()
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
-	if usr.Admin {
-		return
+
+	siteSettings := Settings{
+		SiteName:         "short-url",
+		AdSlot:           "1232435",
+		AdClient:         "ca-pub-123we234rwefwe",
+		RevenuePerClick:  0.2,
+		WithdrawnBalance: 100,
+	}
+
+	_, err = siteSettings.FindBySiteName("short-url")
+	if err != nil {
+		fmt.Println("Site settings not found. Creating...")
+		siteSettings.NewSettings()
 	}
 }
 
@@ -96,4 +111,12 @@ func getSeenCollection() (*mongo.Collection, context.Context) {
 
 func getHelpCollection() (*mongo.Collection, context.Context) {
 	return &helpCollection, context.TODO()
+}
+
+func getSiteSettingsCollection() (*mongo.Collection, context.Context) {
+	return &siteSettingsCollection, context.TODO()
+}
+
+func getFaqCollection() (*mongo.Collection, context.Context) {
+	return &faqCollection, context.TODO()
 }

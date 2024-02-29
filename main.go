@@ -22,6 +22,7 @@ func main() {
 
 	url := router.Group("url")
 	url.POST("/add", controllers.ShortLink)
+	url.PUT("/update", controllers.UpdateUrl)
 	url.GET("/getall", controllers.GetAll)
 	url.DELETE("/delete/:id", controllers.DeleteByID)
 	url.GET("/get/:shortenedurl", controllers.GetByUrl)
@@ -51,8 +52,17 @@ func main() {
 	help.GET("/getbyuser", controllers.GetHelpRequestsByUser)
 	help.PUT("/updatestatus/", controllers.ChangeHelpRequestStatus)
 
+	faq := router.Group("faq")
+	faq.POST("/new", controllers.CreateFaq)
+	faq.GET("/getall", controllers.GetFaqs)
+	faq.PUT("/update", controllers.UpdateFaq)
+	faq.DELETE("/delete/", controllers.DeleteFaq)
+
 	seen := router.Group("seen")
 	seen.GET("/userseen/:days", controllers.GetUserSeenData)
+
+	sitesett := router.Group("sitesettings")
+	sitesett.GET("/getbysite", controllers.GetBySiteName)
 
 	port := os.Getenv("PORT")
 	if port == "" {
