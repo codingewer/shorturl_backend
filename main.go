@@ -49,7 +49,7 @@ func main() {
 	help.POST("/new", controllers.NewHelpRequest)
 	help.GET("/getbystatus/:stats", controllers.GetHelpRequestsByStatus)
 	help.GET("/getbyuser", controllers.GetHelpRequestsByUser)
-	help.PUT("/updatestatus/:status", controllers.ChangeHelpRequestStatus)
+	help.PUT("/updatestatus/", controllers.ChangeHelpRequestStatus)
 
 	seen := router.Group("seen")
 	seen.GET("/userseen/:days", controllers.GetUserSeenData)
