@@ -62,7 +62,7 @@ func main() {
 	seen.GET("/userseen/:days", controllers.GetUserSeenData)
 
 	sitesett := router.Group("sitesettings")
-	sitesett.GET("/getbysite", controllers.GetBySiteName)
+	sitesett.GET("/getbysite/:siteName", controllers.GetBySiteName)
 
 	port := os.Getenv("PORT")
 	if port == "" {
