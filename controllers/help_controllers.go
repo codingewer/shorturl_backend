@@ -43,7 +43,7 @@ func ChangeHelpRequestStatus(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, nil)
+	c.JSON(http.StatusOK, helpReq)
 }
 
 func GetHelpRequestsByStatus(c *gin.Context) {
