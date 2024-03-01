@@ -45,7 +45,7 @@ func (help HelpRequest) NewHelpRequest(userId primitive.ObjectID) (HelpRequest, 
 func (help HelpRequest) FindByStatus(status bool) ([]HelpRequest, error) {
 	db, ctx := getHelpCollection()
 	var helpRequests []HelpRequest
-	opts := options.Find().SetSort(bson.D{{"created_at", -1}})
+	opts := options.Find().SetSort(bson.D{{"createdAt", -1}})
 	cursor, err := db.Find(ctx, bson.M{"status": status}, opts)
 	if err != nil {
 		return helpRequests, err
