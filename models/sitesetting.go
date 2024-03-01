@@ -38,9 +38,9 @@ func (s Settings) FindBySiteName(siteName string) (*Settings, error) {
 }
 
 // update site settings by id
-func (s Settings) UpdateSettings(id primitive.ObjectID) (*Settings, error) {
+func (s Settings) UpdateSettings(siteName string) (*Settings, error) {
 	db, ctx := getSiteSettingsCollection()
-	filer := bson.M{"_id": id}
+	filer := bson.M{"site_name": siteName}
 	update := bson.M{
 		"about_us":          s.AboutUs,
 		"ad_slot":           s.AdSlot,

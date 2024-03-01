@@ -12,8 +12,14 @@ import (
 
 func NewBalanceRequests(c *gin.Context) {
 	balance := models.BalanceRequest{}
+	sitesettings := models.Settings{}
 	c.BindJSON(&balance)
 	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	settings, err := sitesettings.FindBySiteName("short-url")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
@@ -25,8 +31,8 @@ func NewBalanceRequests(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
 	}
-	if userFromDB.Balance < 10 {
-		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bakiye 10 TL'den az!"})
+	if userFromDB.Balance < settings.WithdrawnBalance {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetersiz Bakiye"})
 		return
 	}
 	if userFromDB.Balance < balance.Amount {

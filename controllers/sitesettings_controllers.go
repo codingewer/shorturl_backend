@@ -31,7 +31,8 @@ func UpdateSiteSettings(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	updated, err := setting.UpdateSettings(setting.ID)
+	siteName := c.Param("siteName")
+	updated, err := setting.UpdateSettings(siteName)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return

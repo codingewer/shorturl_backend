@@ -63,7 +63,7 @@ func main() {
 
 	sitesett := router.Group("sitesettings")
 	sitesett.GET("/getbysite/:siteName", controllers.GetBySiteName)
-	sitesett.PUT("/update", controllers.UpdateSiteSettings)
+	sitesett.PUT("/update/:siteName", controllers.UpdateSiteSettings)
 
 	port := os.Getenv("PORT")
 	if port == "" {
