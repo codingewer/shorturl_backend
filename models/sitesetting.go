@@ -9,6 +9,8 @@ type Settings struct {
 	ID               primitive.ObjectID `bson:"_id"`
 	SiteName         string             `bson:"site_name"`
 	AboutUs          string             `bson:"about_us"`
+	PrivacyPolicy    string             `bson:"privacy_policy"`
+	TermsConditions  string             `bson:"terms_conditions"`
 	AdSlot           string             `bson:"ad_slot"`
 	AdClient         string             `bson:"ad_client"`
 	RevenuePerClick  float64            `bson:"revenue_per_click"`
@@ -46,7 +48,10 @@ func (s Settings) UpdateSettings(siteName string) (*Settings, error) {
 		"ad_slot":           s.AdSlot,
 		"ad_client":         s.AdClient,
 		"revenue_per_click": s.RevenuePerClick,
-		"withdrawn_balance": s.WithdrawnBalance}
+		"withdrawn_balance": s.WithdrawnBalance,
+		"privacy_policy":    s.PrivacyPolicy,
+		"terms_conditions":  s.TermsConditions,
+	}
 	_, err := db.UpdateOne(ctx, filer, bson.M{"$set": update})
 	if err != nil {
 		return &Settings{}, err
