@@ -16,7 +16,7 @@ type Seen struct {
 }
 
 type ChartData struct {
-	Balance map[string]float32 `json:"balance_chart"`
+	Balance map[string]float64 `json:"balance_chart"`
 	Views   map[string]int     `json:"views_chart"`
 }
 
@@ -41,9 +41,13 @@ func (seen Seen) NewSeen(userID, urlID primitive.ObjectID) error {
 // Seen objesini kullanıcı idsi ile alıp haftalık veya istenilen günler kadar gün gün verileri array şekilde verilecek biçimde çekme
 func (seen Seen) GetSeenData(userID primitive.ObjectID, days int) (ChartData, error) {
 	db, ctx := getSeenCollection()
-
+	siteData := Settings{}
+	setdata, err := siteData.FindBySiteName("short-url")
+	if err != nil {
+		return ChartData{}, err
+	}
 	viewCounts := make(map[string]int)
-	balanceCounts := make(map[string]float32)
+	balanceCounts := make(map[string]float64)
 	// sadece integerlardan oluşan bir array ver
 	filter := bson.M{"user_id": userID, "created_at": bson.M{"$gte": time.Now().AddDate(0, 0, -days)}}
 	cursor, err := db.Find(ctx, filter)
@@ -57,7 +61,7 @@ func (seen Seen) GetSeenData(userID primitive.ObjectID, days int) (ChartData, er
 			return ChartData{}, err
 		}
 		viewCounts[seen.CreatedAt.Time().Format("2006-01-02")]++
-		balanceCounts[seen.CreatedAt.Time().Format("2006-01-02")] += 0.2
+		balanceCounts[seen.CreatedAt.Time().Format("2006-01-02")] += setdata.RevenuePerClick
 	}
 	if err := cursor.Err(); err != nil {
 		return ChartData{}, err

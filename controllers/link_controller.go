@@ -73,8 +73,14 @@ func GetAll(c *gin.Context) {
 // Link adına göre veri tabanında linki çeken fonksiyonu http üzerinden bağlanmamızı sağlayan fonksiyon
 func GetByUrl(c *gin.Context) {
 	url := models.Url{}
+	user := models.User{}
+	siteSettings := models.Settings{}
+	setdata, err := siteSettings.FindBySiteName("short-url")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
 	title := c.Param("shortenedurl")
-
 	result, err := url.FindByUrl(title)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
@@ -85,6 +91,10 @@ func GetByUrl(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
+	}
+	err = user.AddBalance(result.CreatedBy, setdata.RevenuePerClick)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 	}
 	c.JSON(http.StatusOK, result)
 }

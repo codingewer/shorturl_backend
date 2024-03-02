@@ -70,14 +70,6 @@ func (url Url) FindByUrl(shortenedurl string) (Url, error) {
 	if err != nil {
 		return Url{}, err
 	}
-	//Görüntülendi objesi oluşturma
-
-	//Kullanıcının bakiyesini görüntülenme başı artırmak
-	user := User{}
-	err = user.AddBalance(result.CreatedBy, 1)
-	if err != nil {
-		return Url{}, err
-	}
 
 	return result, nil
 }

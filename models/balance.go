@@ -22,6 +22,7 @@ type BalanceInfo struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty" json:"ID"`
 	UserId    primitive.ObjectID `json:"userId"  bson:"user_id"`
 	Iban      string             `json:"iban"  bson:"iban"`
+	PaparaNo  string             `json:"paparaNo"  bson:"papara_no"`
 	IbanOwner string             `json:"ibanOwner"  bson:"iban_owner"`
 }
 
@@ -116,7 +117,10 @@ func (balanceInfo BalanceInfo) CreateBalanceInfo(userId primitive.ObjectID) (Bal
 // update balance info by User id
 func (balanceInfo BalanceInfo) UpdateBalanceInfo(userId primitive.ObjectID) (BalanceInfo, error) {
 	db, ctx := getBalanceInfoCollection()
-	_, err := db.UpdateOne(ctx, bson.M{"user_id": userId}, bson.M{"$set": bson.M{"iban": balanceInfo.Iban, "iban_owner": balanceInfo.IbanOwner}})
+	_, err := db.UpdateOne(ctx, bson.M{"user_id": userId}, bson.M{"$set": bson.M{
+		"iban":       balanceInfo.Iban,
+		"iban_owner": balanceInfo.IbanOwner,
+		"papara_no":  balanceInfo.PaparaNo}})
 	if err != nil {
 		return BalanceInfo{}, err
 	}
