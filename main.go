@@ -24,6 +24,7 @@ func main() {
 	url.POST("/add", controllers.ShortLink)
 	url.PUT("/update", controllers.UpdateUrl)
 	url.GET("/getall", controllers.GetAll)
+	url.GET("/getbyid/:id", controllers.GetByID)
 	url.DELETE("/delete/:id", controllers.DeleteByID)
 	url.GET("/get/:shortenedurl", controllers.GetByUrl)
 	url.GET("/getbycreatedby", controllers.GetByCreatedBy)

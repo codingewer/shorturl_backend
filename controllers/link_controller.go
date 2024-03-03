@@ -173,3 +173,16 @@ func UpdateUrl(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"status": "link başarıyla güncellendi"})
 }
+
+// get by id
+func GetByID(c *gin.Context) {
+	url := models.Url{}
+	id := c.Param("id")
+	idd, _ := primitive.ObjectIDFromHex(id)
+	result, err := url.FindByID(idd)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, result)
+}
