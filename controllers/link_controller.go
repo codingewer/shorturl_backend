@@ -128,7 +128,7 @@ func DeleteByID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, nil)
+	c.JSON(http.StatusOK, id)
 }
 
 // kullanıcı adına göre veri tabanında linkleri çeken fonksiyonu http üzerinden bağlanmamızı sağlayan fonksiyon
