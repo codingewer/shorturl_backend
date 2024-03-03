@@ -82,10 +82,6 @@ func GetBalanceRequests(c *gin.Context) {
 
 func GetBalanceRequestsById(c *gin.Context) {
 	balance := models.BalanceRequest{}
-	if !auth.CheckIsAdmin(c) {
-		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok!"})
-		return
-	}
 	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
