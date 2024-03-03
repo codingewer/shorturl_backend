@@ -69,6 +69,7 @@ func GetAllUsers(c *gin.Context) {
 // Kullanıcı adına göre kullanıcıyı çekmemizi sağlayan fonksiyona http üzerinden erişmeyi sağlayan fonksiyon
 func GetUserByID(c *gin.Context) {
 	user := models.User{}
+	balanceInfo := models.BalanceInfo{}
 	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
@@ -80,7 +81,13 @@ func GetUserByID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
 		return
 	}
+	userinfo, err := balanceInfo.FindBalanceInfoByUserId(result.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Bakiye bilgisi bulunamadı"})
+		return
+	}
 	result.Password = ""
+	result.BalanceInfo = userinfo
 	c.JSON(http.StatusOK, result)
 }
 
