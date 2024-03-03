@@ -108,7 +108,6 @@ func DeleteByID(c *gin.Context) {
 		return
 	}
 	tokenUser := auth.ClaimsToUser(claims)
-	c.BindJSON(url)
 	id := c.Param("id")
 	idd, _ := primitive.ObjectIDFromHex(id)
 
