@@ -81,11 +81,7 @@ func GetUserByID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
 		return
 	}
-	userinfo, err := balanceInfo.FindBalanceInfoByUserId(result.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Bakiye bilgisi bulunamadı"})
-		return
-	}
+	userinfo, _ := balanceInfo.FindBalanceInfoByUserId(result.ID)
 	result.Password = ""
 	result.BalanceInfo = userinfo
 	c.JSON(http.StatusOK, result)
