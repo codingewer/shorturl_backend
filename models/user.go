@@ -137,6 +137,27 @@ func (user User) NewLinkCount(username string) error {
 	return nil
 }
 
+func (user User) DownLinkCount(username string) error {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"username": username}
+	var result User
+	err := db.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return err
+	}
+	count := result.UrlCount - 1
+
+	update := bson.D{{"$set", bson.D{{"click_count", count}}}}
+
+	_, err = db.UpdateOne(ctx, filter, update)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (user User) UpdateBalance(userId primitive.ObjectID, amount float64) error {
 	db := getUserCollection()
 	ctx := context.TODO()

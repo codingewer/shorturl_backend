@@ -102,6 +102,7 @@ func GetByUrl(c *gin.Context) {
 // Link İdsine göre veri tabanından linki  silen fonksiyonu http üzerinden bağlanmamızı sağlayan fonksiyon
 func DeleteByID(c *gin.Context) {
 	url := models.Url{}
+	user := models.User{}
 	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
@@ -112,7 +113,12 @@ func DeleteByID(c *gin.Context) {
 	idd, _ := primitive.ObjectIDFromHex(id)
 
 	urlll, err := url.FindByID(idd)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
 
+	err = user.DownLinkCount(urlll.CreatedBy)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
