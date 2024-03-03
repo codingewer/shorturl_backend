@@ -65,7 +65,8 @@ func UpdateFaq(c *gin.Context) {
 // delete by id
 func DeleteFaq(c *gin.Context) {
 	faq := models.Faq{}
-	c.BindJSON(&faq)
+	id := c.Param("id")
+	faq.ID, _ = primitive.ObjectIDFromHex(id)
 	if !auth.CheckIsAdmin(c) {
 		c.JSON(http.StatusUnauthorized, gin.H{"ERROR": "Yetkiniz yok"})
 		return
