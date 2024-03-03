@@ -12,7 +12,7 @@ type Faq struct {
 }
 
 func (faq Faq) NewFaq() (Faq, error) {
-	db, ctx := getBalanceCollection()
+	db, ctx := getFaqCollection()
 	result, err := db.InsertOne(ctx, faq)
 	if err != nil {
 		return Faq{}, err
@@ -22,7 +22,7 @@ func (faq Faq) NewFaq() (Faq, error) {
 }
 
 func (faq Faq) FindAllFaqs() ([]Faq, error) {
-	db, ctx := getBalanceCollection()
+	db, ctx := getFaqCollection()
 
 	cursor, err := db.Find(ctx, bson.D{})
 	if err != nil {
@@ -37,7 +37,7 @@ func (faq Faq) FindAllFaqs() ([]Faq, error) {
 
 // find faq by id
 func (faq Faq) FindFaqByID() (Faq, error) {
-	db, ctx := getBalanceCollection()
+	db, ctx := getFaqCollection()
 	err := db.FindOne(ctx, bson.D{{"_id", faq.ID}}).Decode(&faq)
 	if err != nil {
 		return Faq{}, err
@@ -47,7 +47,7 @@ func (faq Faq) FindFaqByID() (Faq, error) {
 
 // Delete Faq byID
 func (faq Faq) DeleteFaqByID() error {
-	db, ctx := getBalanceCollection()
+	db, ctx := getFaqCollection()
 	_, err := db.DeleteOne(ctx, bson.D{{"_id", faq.ID}})
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (faq Faq) DeleteFaqByID() error {
 }
 
 func (faq Faq) UpdateFaqByID() error {
-	db, ctx := getBalanceCollection()
+	db, ctx := getFaqCollection()
 	_, err := db.UpdateOne(ctx, bson.D{{"_id", faq.ID}}, bson.D{{"$set", bson.D{{"question", faq.Question}, {"answer", faq.Answer}}}})
 	if err != nil {
 		return err
