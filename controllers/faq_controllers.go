@@ -59,7 +59,7 @@ func UpdateFaq(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"status": "güncellendi"})
+	c.JSON(http.StatusOK, faq)
 }
 
 // delete by id
