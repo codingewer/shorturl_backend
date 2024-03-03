@@ -18,6 +18,7 @@ type Url struct {
 	CreatedBy    string             `bson:"created_by,CreatedBy"`
 	CreatedAt    primitive.DateTime `bson:"created_at,omitempty"`
 	ClickCount   int                `bson:"click_count,CreatedBy"`
+	ClickEarning float64            `bson:"click_earning,CreatedBy"`
 }
 
 // Kısaltılan linki veri tabanına kaydeden fonsikyon
@@ -62,10 +63,13 @@ func (url Url) FindByUrl(shortenedurl string) (Url, error) {
 	if err != nil {
 		return Url{}, err
 	}
+	siteData := Settings{}
 
+	data, _ := siteData.FindBySiteName("short-url")
+	clickearning := result.ClickEarning + data.RevenuePerClick
 	//Link çağırıldıktan sonra tıklanma sayısını güncelleme
 	click := result.ClickCount + 1
-	update := bson.D{{"$set", bson.D{{"click_count", click}}}}
+	update := bson.D{{"$set", bson.D{{"click_count", click}, {"click_earning", clickearning}}}}
 	_, err = db.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return Url{}, err
