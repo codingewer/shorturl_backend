@@ -6,6 +6,7 @@ import (
 	"short-link/models"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func CreateFaq(c *gin.Context) {
@@ -31,6 +32,18 @@ func GetFaqs(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, faqs)
+}
+
+func GetFaq(c *gin.Context) {
+	faq := models.Faq{}
+	id := c.Param("id")
+	faq.ID, _ = primitive.ObjectIDFromHex(id)
+	faq, err := faq.FindFaqByID()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, faq)
 }
 
 // update faq

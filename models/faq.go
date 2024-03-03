@@ -28,12 +28,21 @@ func (faq Faq) FindAllFaqs() ([]Faq, error) {
 	if err != nil {
 		return []Faq{}, err
 	}
-
 	var faqs []Faq
 	if err = cursor.All(ctx, &faqs); err != nil {
 		return []Faq{}, err
 	}
 	return faqs, nil
+}
+
+// find faq by id
+func (faq Faq) FindFaqByID() (Faq, error) {
+	db, ctx := getBalanceCollection()
+	err := db.FindOne(ctx, bson.D{{"_id", faq.ID}}).Decode(&faq)
+	if err != nil {
+		return Faq{}, err
+	}
+	return faq, nil
 }
 
 // Delete Faq byID
@@ -45,6 +54,7 @@ func (faq Faq) DeleteFaqByID() error {
 	}
 	return nil
 }
+
 func (faq Faq) UpdateFaqByID() error {
 	db, ctx := getBalanceCollection()
 	_, err := db.UpdateOne(ctx, bson.D{{"_id", faq.ID}}, bson.D{{"$set", bson.D{{"question", faq.Question}, {"answer", faq.Answer}}}})

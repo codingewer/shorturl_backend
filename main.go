@@ -56,6 +56,7 @@ func main() {
 	faq := router.Group("faq")
 	faq.POST("/new", controllers.CreateFaq)
 	faq.GET("/getall", controllers.GetFaqs)
+	faq.GET("/getbyid/:id", controllers.GetFaq)
 	faq.PUT("/update", controllers.UpdateFaq)
 	faq.DELETE("/delete/", controllers.DeleteFaq)
 
