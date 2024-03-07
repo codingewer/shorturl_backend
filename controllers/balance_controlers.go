@@ -231,5 +231,5 @@ func DeleteBalanceInfo(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "Balance info deleted"})
+	c.JSON(http.StatusOK, id)
 }
