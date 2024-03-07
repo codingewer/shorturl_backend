@@ -12,7 +12,6 @@ import (
 // Veritabanına kayeden fonsiyonu çağırıp http ile bağlanmamızı sağlayan fonksiyon
 func CreateUser(c *gin.Context) {
 	user := models.User{}
-	balanceInfo := models.BalanceInfo{}
 	c.BindJSON(&user)
 
 	userfromdb, _ := user.FindUserByUserName(user.UserName)
@@ -29,21 +28,14 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	balanceInfo.UserId = userll.ID
-	userInfoB, err := balanceInfo.CreateBalanceInfo(userll.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
-		return
-	}
 	token, _ := auth.GenerateTokenForUser(userll)
 	responseUser := models.ResponseUser{
-		ID:          userll.ID,
-		UserName:    userll.UserName,
-		Admin:       userll.Admin,
-		Role:        userll.Role,
-		Balance:     userll.Balance,
-		UrlCount:    userll.UrlCount,
-		BalanceInfo: userInfoB,
+		ID:       userll.ID,
+		UserName: userll.UserName,
+		Admin:    userll.Admin,
+		Role:     userll.Role,
+		Balance:  userll.Balance,
+		UrlCount: userll.UrlCount,
 	}
 	c.JSON(http.StatusOK, gin.H{"token": token,
 		"user": responseUser,
@@ -82,6 +74,7 @@ func GetUserByID(c *gin.Context) {
 		return
 	}
 	userinfo, _ := balanceInfo.FindBalanceInfoByUserId(result.ID)
+
 	result.Password = ""
 	result.BalanceInfo = userinfo
 	c.JSON(http.StatusOK, result)

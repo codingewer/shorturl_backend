@@ -46,6 +46,8 @@ func main() {
 	balance.PUT("/info/updateinfo", controllers.UpdateBalanceInfo)
 	balance.GET("/info/getbyuserId", controllers.GetBalanceInfo)
 	balance.GET("/info/getall", controllers.FindAllBalanceInfo)
+	balance.POST("/info/new", controllers.NewBalanceInfo)
+	balance.DELETE("/info/delete/:id", controllers.DeleteBalanceInfo)
 
 	help := router.Group("help")
 	help.POST("/new", controllers.NewHelpRequest)
@@ -74,5 +76,4 @@ func main() {
 	if err := router.Run(":" + port); err != nil {
 		log.Panicf("error: %s", err)
 	}
-
 }

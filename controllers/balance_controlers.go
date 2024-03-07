@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func NewBalanceRequests(c *gin.Context) {
@@ -98,6 +99,30 @@ func GetBalanceRequestsById(c *gin.Context) {
 	c.JSON(http.StatusOK, balanceRequests)
 }
 
+// new balance info
+func NewBalanceInfo(c *gin.Context) {
+	balance := models.BalanceInfo{}
+	c.BindJSON(&balance)
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+	balance.UserId = tokenUser.ID
+	info, _ := balance.FindBalanceInfoByUserId(tokenUser.ID)
+	if info.UserId == tokenUser.ID {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Böyle bir bilgi zate var"})
+		return
+	}
+	balanceSaved, err := balance.CreateBalanceInfo(tokenUser.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, balanceSaved)
+}
+
 func UpdateBalanceRequest(c *gin.Context) {
 	balance := models.BalanceRequest{}
 	c.BindJSON(&balance)
@@ -173,4 +198,38 @@ func FindAllBalanceInfo(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, balanceInfo)
+}
+
+// delete balanceinfo by id
+func DeleteBalanceInfo(c *gin.Context) {
+	balance := models.BalanceInfo{}
+	id := c.Param("id")
+
+	claims, err := auth.ValidateUseToken(c)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+
+	iid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	balanceInfo, err := balance.FindBalanceInfoById(iid)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	if tokenUser.ID != balanceInfo.UserId {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok!"})
+		return
+	}
+	err = balance.DeleteBalanceInfoById(balanceInfo.ID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Balance info deleted"})
 }
