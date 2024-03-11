@@ -61,8 +61,9 @@ func (help HelpRequest) FindByStatus(status bool) ([]HelpRequest, error) {
 
 func (help HelpRequest) ChangeStatus() error {
 	db, ctx := getHelpCollection()
+	date := primitive.NewDateTimeFromTime(time.Now())
 	filter := bson.M{"_id": help.ID}
-	update := bson.M{"$set": bson.M{"status": help.Status, "answer": help.Answer}}
+	update := bson.M{"$set": bson.M{"status": help.Status, "answer": help.Answer, "updatedAt": date}}
 	_, err := db.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return err
