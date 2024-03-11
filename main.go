@@ -37,6 +37,8 @@ func main() {
 	user.POST("/login", controllers.Login)
 	user.PUT("/update", controllers.UpdateUser)
 	user.PUT("/updatepassword", controllers.UpdatePassword)
+	user.POST("/forgotpassword", controllers.ForgotPassword)
+	user.POST("/resetpassword/:token", controllers.NewPassword)
 
 	balance := router.Group("balance")
 	balance.POST("/add", controllers.NewBalanceRequests)

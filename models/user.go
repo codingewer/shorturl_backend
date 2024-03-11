@@ -32,6 +32,11 @@ type ResponseUser struct {
 	BalanceInfo BalanceInfo        `json:"BalanceInfo"`
 }
 
+type ForgotPassword struct {
+	Mail   string `json:"mail"`
+	Domain string `json:"domain"`
+}
+
 type UpdatePasswordUser struct {
 	Password    string `json:"password"`
 	NewPassword string `json:"newPassword"`
@@ -60,6 +65,20 @@ func (user User) FindUserByUserName(username string) (User, error) {
 	db := getUserCollection()
 	ctx := context.TODO()
 	filter := bson.M{"username": username}
+
+	var result User
+	err := db.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return User{}, err
+	}
+
+	return result, nil
+}
+
+func (user User) FindUserByUserMail(mail string) (User, error) {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"mail": mail}
 
 	var result User
 	err := db.FindOne(ctx, filter).Decode(&result)

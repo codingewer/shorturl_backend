@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"short-link/auth"
 	"short-link/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -177,4 +178,52 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"SUCCESS": "Kullanıcı Güncellendi"})
+}
+
+func ForgotPassword(c *gin.Context) {
+	user := models.User{}
+	data := models.ForgotPassword{}
+	c.BindJSON(&data)
+	userFromDb, err := user.FindUserByUserMail(data.Mail)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Böyle bir kullanıcı yok!"})
+		return
+	}
+
+	token, err := auth.GenerateTokenForForgotPassword(userFromDb)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	url := data.Domain + token
+	err = auth.SendForgotPasswordEmail(userFromDb.Mail, url)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"SUCCESS": "Mail gönderildi"})
+}
+
+func NewPassword(c *gin.Context) {
+	user := models.User{}
+	c.BindJSON(&user)
+	token := c.Param("token")
+	claims, err := auth.ValidateForgotPasswordToken(token)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	tokenUser := auth.ClaimsToUser(claims)
+	if tokenUser.ExpDate.Before(time.Now()) {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Token süresi doldu"})
+		return
+	}
+
+	err = user.UpdatePassword(tokenUser.ID, user.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": tokenUser.ID})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"SUCCESS": "Şifre Güncellendi",
+		"req": tokenUser})
 }
