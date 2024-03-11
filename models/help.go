@@ -11,6 +11,8 @@ import (
 type HelpRequest struct {
 	ID        primitive.ObjectID `bson:"_id" json:"ID"`
 	Title     string             `bson:"title" json:"Title"`
+	VideoUrl  string             `bson:"video_url" json:"VideoUrl"`
+	ImageUrl  string             `bson:"image_url" json:"ImageUrl"`
 	Content   string             `bson:"content" json:"Content"`
 	Answer    string             `bson:"answer" json:"Answer"`
 	UserID    primitive.ObjectID `bson:"user_id" json:"userID"`
