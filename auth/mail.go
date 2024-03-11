@@ -35,8 +35,8 @@ func SendForgotPasswordEmail(email, token string) error {
 		Body    string
 		Link    string
 	}{
-		Subject: "E-posta Konusu",
-		Body:    "E-posta Gövdesi",
+		Subject: "Şifre Yenileme",
+		Body:    "Link kısaltma uygulammıza tekrar giriş yapabilmek için 10 dk geçerli şifre yenileme linkiniz:",
 		Link:    token,
 	}
 

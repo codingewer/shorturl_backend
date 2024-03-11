@@ -51,7 +51,7 @@ func GenerateTokenForForgotPassword(user models.User) (string, error) {
 	token.Claims = UserClaims{
 		ID:       user.ID,
 		Role:     user.Role,
-		ExpDate:  time.Now().Add(30 * time.Minute),
+		ExpDate:  time.Now().Add(10 * time.Minute),
 		UserName: user.UserName,
 	}
 	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
