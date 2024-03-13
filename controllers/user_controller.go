@@ -63,6 +63,7 @@ func GetAllUsers(c *gin.Context) {
 func GetUserByID(c *gin.Context) {
 	user := models.User{}
 	balanceInfo := models.BalanceInfo{}
+	pprano := models.PaparaNo{}
 	claims, err := auth.ValidateUseToken(c)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
@@ -75,9 +76,11 @@ func GetUserByID(c *gin.Context) {
 		return
 	}
 	userinfo, _ := balanceInfo.FindBalanceInfoByUserId(result.ID)
+	paparano, _ := pprano.FindPaparaNoByUserId(result.ID)
 
 	result.Password = ""
 	result.BalanceInfo = userinfo
+	result.PaparaNo = paparano
 	c.JSON(http.StatusOK, result)
 }
 

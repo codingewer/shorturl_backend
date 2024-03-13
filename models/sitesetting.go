@@ -13,6 +13,9 @@ type Settings struct {
 	TermsConditions  string             `bson:"terms_conditions"`
 	AdSlot           string             `bson:"ad_slot"`
 	AdClient         string             `bson:"ad_client"`
+	ReChapchaCode    string             `bson:"rechapcha_code"`
+	SmtpMail         string             `bson:"smtp_mail"`
+	SmtpPassword     string             `bson:"smtp_password"`
 	RevenuePerClick  float64            `bson:"revenue_per_click"`
 	WithdrawnBalance float64            `bson:"withdrawn_balance"`
 }
@@ -51,6 +54,9 @@ func (s Settings) UpdateSettings(siteName string) (*Settings, error) {
 		"withdrawn_balance": s.WithdrawnBalance,
 		"privacy_policy":    s.PrivacyPolicy,
 		"terms_conditions":  s.TermsConditions,
+		"rechapcha_code":    s.ReChapchaCode,
+		"smtp_mail":         s.SmtpMail,
+		"smtp_password":     s.SmtpPassword,
 	}
 	_, err := db.UpdateOne(ctx, filer, bson.M{"$set": update})
 	if err != nil {

@@ -20,6 +20,7 @@ type User struct {
 	UrlCount    int                `bson:"click_count,omitempty"`
 	Admin       bool               `bson:"admin,omitempty"`
 	BalanceInfo BalanceInfo        `json:"BalanceInfo"`
+	PaparaNo    PaparaNo           `json:"PaparaNo"`
 }
 
 type ResponseUser struct {
@@ -30,6 +31,7 @@ type ResponseUser struct {
 	UrlCount    int                `bson:"click_count,omitempty"`
 	Admin       bool               `bson:"admin,omitempty"`
 	BalanceInfo BalanceInfo        `json:"BalanceInfo"`
+	PaparaNo    PaparaNo           `json:"PaparaNo"`
 }
 
 type ForgotPassword struct {

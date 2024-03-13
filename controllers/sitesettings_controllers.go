@@ -16,6 +16,7 @@ func GetBySiteName(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	stgns.SmtpPassword = ""
 	c.JSON(http.StatusOK, stgns)
 }
 
