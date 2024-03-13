@@ -209,7 +209,8 @@ func ForgotPassword(c *gin.Context) {
 
 func NewPassword(c *gin.Context) {
 	user := models.User{}
-	c.BindJSON(&user)
+	updatepass := models.UpdatePasswordUser{}
+	c.BindJSON(&updatepass)
 	token := c.Param("token")
 	claims, err := auth.ValidateForgotPasswordToken(token)
 	if err != nil {
@@ -222,7 +223,7 @@ func NewPassword(c *gin.Context) {
 		return
 	}
 
-	err = user.UpdatePassword(tokenUser.ID, user.Password)
+	err = user.UpdatePassword(tokenUser.ID, updatepass.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": tokenUser.ID})
 		return
