@@ -50,6 +50,9 @@ func main() {
 	balance.GET("/info/getall", controllers.FindAllBalanceInfo)
 	balance.POST("/info/new", controllers.NewBalanceInfo)
 	balance.DELETE("/info/delete/:id", controllers.DeleteBalanceInfo)
+	balance.DELETE("/papara/delete/:id", controllers.DeletePaparaNo)
+	balance.PUT("/papara/updateinfo", controllers.UpdatePaparaNo)
+	balance.POST("/papara/new", controllers.NewPaparaNo)
 
 	help := router.Group("help")
 	help.POST("/new", controllers.NewHelpRequest)
