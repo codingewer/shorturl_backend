@@ -15,6 +15,7 @@ type BalanceRequest struct {
 	User      ResponseUser       `json:"user"  bson:"-"`
 	Amount    float64            `json:"amount"  bson:"amount"`
 	Status    bool               `json:"status"  bson:"status"`
+	Option    string             `json:"option"  bson:"option"`
 	CreatedAt primitive.DateTime `json:"createdAt"  bson:"created_at"`
 }
 

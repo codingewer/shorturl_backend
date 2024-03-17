@@ -7,8 +7,8 @@ import (
 
 type PaparaNo struct {
 	ID       primitive.ObjectID `bson:"_id"`
-	PaparaNo string             `bson:"papara_no"`
 	UserId   primitive.ObjectID `bson:"user_id"`
+	PaparaNo string             `bson:"papara_no"`
 }
 
 // find all Papara info
