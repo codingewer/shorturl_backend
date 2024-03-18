@@ -155,11 +155,17 @@ func DeleteUrlByID(c *gin.Context) {
 func GetByCreatedBy(c *gin.Context) {
 	url := models.Url{}
 	id := c.Param("id")
+	claims, _ := auth.ValidateUseToken(c)
 	idd, _ := primitive.ObjectIDFromHex(id)
 	result, err := url.FindByCreatedBy(idd)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
+	}
+	if claims["user_id"] != id {
+		for i, _ := range result {
+			result[i].OrginalUrl = ""
+		}
 	}
 	c.JSON(http.StatusOK, result)
 }
