@@ -21,6 +21,7 @@ type User struct {
 	Admin       bool               `bson:"admin,omitempty"`
 	BalanceInfo BalanceInfo        `json:"BalanceInfo"`
 	PaparaNo    PaparaNo           `json:"PaparaNo"`
+	Blocked     bool               `bson:"blocked"`
 }
 
 type ResponseUser struct {
@@ -250,6 +251,30 @@ func (user User) UpdateUser(userID primitive.ObjectID, updatedUser User) error {
 	filter := bson.M{"_id": userID}
 	update := bson.D{{"$set", bson.D{{"username", updatedUser.UserName}, {"mail", updatedUser.Mail}}}}
 	_, err := db.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (user User) UpdateBlocked(userID primitive.ObjectID, blocked bool) error {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"_id": userID}
+	update := bson.D{{"$set", bson.D{{"blocked", blocked}}}}
+	_, err := db.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// delete user by id
+func (user User) DeleteUser(userID primitive.ObjectID) error {
+	db := getUserCollection()
+	ctx := context.TODO()
+	filter := bson.M{"_id": userID}
+	_, err := db.DeleteOne(ctx, filter)
 	if err != nil {
 		return err
 	}

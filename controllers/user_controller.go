@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // Veritabanına kayeden fonsiyonu çağırıp http ile bağlanmamızı sağlayan fonksiyon
@@ -230,4 +231,40 @@ func NewPassword(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"SUCCESS": "Şifre Güncellendi",
 		"req": tokenUser})
+}
+
+// update blocked by Admin
+func UpdateBlocked(c *gin.Context) {
+	user := models.User{}
+	c.BindJSON(&user)
+	if auth.CheckIsAdmin(c) {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok"})
+		return
+	}
+	err := user.UpdateBlocked(user.ID, user.Blocked)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"SUCCESS": "Kullanıcı Güncellendi"})
+}
+
+func DeleteUserByAdmin(c *gin.Context) {
+	user := models.User{}
+	id := c.Param("id")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Geçersiz ID"})
+		return
+	}
+	if auth.CheckIsAdmin(c) {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok"})
+		return
+	}
+	err = user.DeleteUser(objectID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"SUCCESS": "Kullanıcı Silindi"})
 }
