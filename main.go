@@ -27,7 +27,7 @@ func main() {
 	url.GET("/getbyid/:id", controllers.GetByID)
 	url.DELETE("/delete/:id", controllers.DeleteByID)
 	url.GET("/get/:shortenedurl", controllers.GetByUrl)
-	url.GET("/getbycreatedby", controllers.GetByCreatedBy)
+	url.GET("/getbycreatedby/:id", controllers.GetByCreatedBy)
 
 	//Kullanıcılar için api linkleri
 	user := router.Group("user")
