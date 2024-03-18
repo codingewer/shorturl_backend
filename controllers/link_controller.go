@@ -140,13 +140,9 @@ func DeleteByID(c *gin.Context) {
 // kullanıcı adına göre veri tabanında linkleri çeken fonksiyonu http üzerinden bağlanmamızı sağlayan fonksiyon
 func GetByCreatedBy(c *gin.Context) {
 	url := models.Url{}
-	claims, err := auth.ValidateUseToken(c)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"ERROR": err.Error()})
-		return
-	}
-	tokenUser := auth.ClaimsToUser(claims)
-	result, err := url.FindByCreatedBy(tokenUser.ID)
+	id := c.Param("id")
+	idd, _ := primitive.ObjectIDFromHex(id)
+	result, err := url.FindByCreatedBy(idd)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
