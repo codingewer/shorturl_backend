@@ -73,6 +73,7 @@ func main() {
 
 	seen := router.Group("seen")
 	seen.GET("/userseen/:days", controllers.GetUserSeenData)
+	seen.GET("/allseen", controllers.GetAllSeenLength)
 
 	sitesett := router.Group("sitesettings")
 	sitesett.GET("/getbysite/:siteName", controllers.GetBySiteName)

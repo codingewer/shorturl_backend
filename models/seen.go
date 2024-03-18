@@ -72,3 +72,12 @@ func (seen Seen) GetSeenData(userID primitive.ObjectID, days int) (ChartData, er
 	}
 	return data, nil
 }
+
+func (seen Seen) FindAllSeenLength() (int64, error) {
+	db, ctx := getSeenCollection()
+	cursor, err := db.CountDocuments(ctx, bson.M{})
+	if err != nil {
+		return 0, err
+	}
+	return cursor, nil
+}

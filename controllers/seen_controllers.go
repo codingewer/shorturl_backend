@@ -36,3 +36,15 @@ func GetUserSeenData(c *gin.Context) {
 		"days":         days,
 	})
 }
+
+func GetAllSeenLength(c *gin.Context) {
+	seen := models.Seen{}
+	data, err := seen.FindAllSeenLength()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"data": data,
+	})
+}
