@@ -237,12 +237,26 @@ func NewPassword(c *gin.Context) {
 // update blocked by Admin
 func UpdateBlocked(c *gin.Context) {
 	user := models.User{}
-	c.BindJSON(&user)
+	id := c.Param("id")
+	objectID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Geçersiz ID"})
+		return
+	}
 	if auth.CheckIsAdmin(c) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok"})
 		return
 	}
-	err := user.UpdateBlocked(user.ID, user.Blocked)
+	userfromDB, err := user.FindUserByID(objectID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	if userfromDB.Admin {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Admin kullanıcılar engellenemez"})
+		return
+	}
+	err = user.UpdateBlocked(objectID, !userfromDB.Blocked)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return

@@ -46,6 +46,15 @@ func ShortLink(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Yeni link seviyesi eklenirken hata"})
 		return
 	}
+	userFromDB, err := user.FindUserByID(tokenUser.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
+		return
+	}
+	if userFromDB.Blocked {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Kullanıcı engellenmiş bunu gerçekleştiremez"})
+		return
+	}
 	url.CreatedAt = primitive.NewDateTimeFromTime(time.Now())
 	url.CreatedBy = tokenUser.UserName
 	url.UserID = tokenUser.ID
