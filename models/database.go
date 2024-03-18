@@ -25,6 +25,7 @@ var balanceInfoCollection mongo.Collection
 var siteSettingsCollection mongo.Collection
 var faqCollection mongo.Collection
 var paparaNoCollection mongo.Collection
+var UrlFaqCollection mongo.Collection
 
 func init() {
 
@@ -53,6 +54,7 @@ func init() {
 	helpCollection = *urlDB.Collection("help")
 	siteSettingsCollection = *urlDB.Collection("sitesettings")
 	faqCollection = *urlDB.Collection("faq")
+	UrlFaqCollection = *urlDB.Collection("urlfaq")
 	paparaNoCollection = *urlDB.Collection("paparano")
 
 	fmt.Println("Successfully connected and pinged.")
@@ -126,4 +128,8 @@ func getFaqCollection() (*mongo.Collection, context.Context) {
 
 func getPaparaNoCollection() (*mongo.Collection, context.Context) {
 	return &paparaNoCollection, context.TODO()
+}
+
+func getUrlFaqCollection() (*mongo.Collection, context.Context) {
+	return &UrlFaqCollection, context.TODO()
 }

@@ -71,6 +71,13 @@ func main() {
 	faq.PUT("/update", controllers.UpdateFaq)
 	faq.DELETE("/delete/:id", controllers.DeleteFaq)
 
+	urlfaq := router.Group("urlfaq")
+	urlfaq.POST("/new", controllers.CreateUrlFaq)
+	urlfaq.GET("/getall", controllers.GetUrlFaqs)
+	urlfaq.GET("/getbyid/:id", controllers.GetUrlFaq)
+	urlfaq.PUT("/update", controllers.UpdateUrlFaq)
+	urlfaq.DELETE("/delete/:id", controllers.DeleteUrlFaq)
+
 	seen := router.Group("seen")
 	seen.GET("/userseen/:days", controllers.GetUserSeenData)
 	seen.GET("/allseen", controllers.GetAllSeenLength)

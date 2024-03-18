@@ -94,6 +94,21 @@ func GetByUrl(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
 	}
+	visitor := models.GetVisitor(c.ClientIP())
+	// Eğer 10 dakikadan fazla zaman geçtiyse sayaç ve zamanı sıfırla.
+	if time.Since(visitor.LastReset) > 10*time.Minute {
+		visitor.Requests = 0
+		visitor.LastReset = time.Now()
+	}
+	// İstek sayısını arttır ve kontrol et.
+	visitor.Requests++
+	if visitor.Requests > 10 {
+		c.AbortWithStatusJSON(http.StatusTooManyRequests, gin.H{
+			"ERROR": "10 dakika içinde çok fazla istek gönderdiniz. Lütfen daha sonra tekrar deneyiniz.",
+		})
+		return
+	}
+
 	title := c.Param("shortenedurl")
 	result, err := url.FindByUrl(title)
 	if err != nil {
