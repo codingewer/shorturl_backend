@@ -67,6 +67,9 @@ func GetUserByID(c *gin.Context) {
 	pprano := models.PaparaNo{}
 	id := c.Param("id")
 	idd, _ := primitive.ObjectIDFromHex(id)
+	claims, _ := auth.ValidateUseToken(c)
+	//tokenUser := auth.ClaimsToUser(claims)
+
 	result, err := user.FindUserByID(idd)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
@@ -76,8 +79,11 @@ func GetUserByID(c *gin.Context) {
 	paparano, _ := pprano.FindPaparaNoByUserId(result.ID)
 
 	result.Password = ""
-	result.BalanceInfo = userinfo
-	result.PaparaNo = paparano
+	if auth.CheckIsAdmin(c) || claims["user_id"] == id {
+		fmt.Println("userid:", claims["user_id"])
+		result.PaparaNo = paparano
+		result.BalanceInfo = userinfo
+	}
 	c.JSON(http.StatusOK, result)
 }
 
