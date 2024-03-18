@@ -78,6 +78,31 @@ func (url Url) FindByUrl(shortenedurl string) (Url, error) {
 	return result, nil
 }
 
+func (url Url) FindByOriginal(orignalurl string) (Url, error) {
+	db := getUrlCollection()
+	ctx := context.TODO()
+	filter := bson.M{"orginal_url": orignalurl}
+	//Linki veri tabanından çekme
+	var result Url
+	err := db.FindOne(ctx, filter).Decode(&result)
+	if err != nil {
+		return Url{}, err
+	}
+	siteData := Settings{}
+
+	data, _ := siteData.FindBySiteName("short-url")
+	clickearning := result.ClickEarning + data.RevenuePerClick
+	//Link çağırıldıktan sonra tıklanma sayısını güncelleme
+	click := result.ClickCount + 1
+	update := bson.D{{"$set", bson.D{{"click_count", click}, {"click_earning", clickearning}}}}
+	_, err = db.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return Url{}, err
+	}
+
+	return result, nil
+}
+
 // Kısaltılan link idsine sahip veriyi çeken fonksiyon
 func (url Url) FindByID(id primitive.ObjectID) (Url, error) {
 	db := getUrlCollection()

@@ -25,7 +25,8 @@ func main() {
 	url.PUT("/update", controllers.UpdateUrl)
 	url.GET("/getall", controllers.GetAll)
 	url.GET("/getbyid/:id", controllers.GetByID)
-	url.DELETE("/delete/:id", controllers.DeleteByID)
+	url.DELETE("/delete/:id", controllers.DeleteUrlByID)
+	url.DELETE("/deletebyadmin/:id", controllers.DeleteUrlByAdmin)
 	url.GET("/get/:shortenedurl", controllers.GetByUrl)
 	url.GET("/getbycreatedby/:id", controllers.GetByCreatedBy)
 

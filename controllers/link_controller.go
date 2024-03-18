@@ -40,6 +40,11 @@ func ShortLink(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu link zaten mevcut"})
 		return
 	}
+	orginalurl, _ := url.FindByOriginal(url.OrginalUrl)
+	if orginalurl.OrginalUrl == url.OrginalUrl {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu link zaten mevcut"})
+		return
+	}
 	//kullanıcını olup olmadığı ve kullanıcı link oluştruma seviyesi artırılır
 	err = user.NewLinkCount(tokenUser.UserName)
 	if err != nil {
@@ -109,7 +114,7 @@ func GetByUrl(c *gin.Context) {
 }
 
 // Link İdsine göre veri tabanından linki  silen fonksiyonu http üzerinden bağlanmamızı sağlayan fonksiyon
-func DeleteByID(c *gin.Context) {
+func DeleteUrlByID(c *gin.Context) {
 	url := models.Url{}
 	user := models.User{}
 	claims, err := auth.ValidateUseToken(c)
@@ -196,4 +201,34 @@ func GetByID(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, result)
+}
+
+// delete url by admin
+func DeleteUrlByAdmin(c *gin.Context) {
+	url := models.Url{}
+	user := models.User{}
+	if !auth.CheckIsAdmin(c) {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Yetkiniz yok"})
+		return
+	}
+	id := c.Param("id")
+	idd, _ := primitive.ObjectIDFromHex(id)
+
+	urlll, err := url.FindByID(idd)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+
+	err = user.DownLinkCount(urlll.CreatedBy)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	err = url.DeleteByID(idd)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, id)
 }
