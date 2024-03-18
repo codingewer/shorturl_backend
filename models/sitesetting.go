@@ -46,6 +46,17 @@ func (s Settings) FindBySiteName(siteName string) (*Settings, error) {
 func (s Settings) UpdateSettings(siteName string) (*Settings, error) {
 	db, ctx := getSiteSettingsCollection()
 	filer := bson.M{"site_name": siteName}
+	sitedataFromDb := Settings{}
+	err := db.FindOne(ctx, filer).Decode(&sitedataFromDb)
+	if err != nil {
+		return &Settings{}, err
+	}
+	if s.SmtpPassword == "" {
+		s.SmtpPassword = sitedataFromDb.SmtpPassword
+	}
+	if s.SmtpMail == "" {
+		s.SmtpMail = sitedataFromDb.SmtpMail
+	}
 	update := bson.M{
 		"about_us":          s.AboutUs,
 		"ad_slot":           s.AdSlot,
@@ -58,7 +69,7 @@ func (s Settings) UpdateSettings(siteName string) (*Settings, error) {
 		"smtp_mail":         s.SmtpMail,
 		"smtp_password":     s.SmtpPassword,
 	}
-	_, err := db.UpdateOne(ctx, filer, bson.M{"$set": update})
+	_, err = db.UpdateOne(ctx, filer, bson.M{"$set": update})
 	if err != nil {
 		return &Settings{}, err
 	}

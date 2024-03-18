@@ -6,11 +6,14 @@ import (
 	"html/template"
 	"net/smtp"
 	"os"
+	"short-link/models"
 )
 
 func SendForgotPasswordEmail(email, token string) error {
-	from := "yatli5645@gmail.com"
-	password := "vbajpqwutuygasvr"
+	settings := models.Settings{}
+	sitedata, _ := settings.FindBySiteName("short-url")
+	from := sitedata.SmtpMail
+	password := sitedata.SmtpPassword
 	toList := []string{email}
 	host := "smtp.gmail.com"
 	port := "587"
