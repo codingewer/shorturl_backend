@@ -54,7 +54,6 @@ func GetAllUsers(c *gin.Context) {
 	users, err := user.FindAllUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
-		fmt.Println("3")
 		return
 	}
 	c.JSON(http.StatusOK, users)
@@ -261,6 +260,16 @@ func DeleteUserByAdmin(c *gin.Context) {
 	}
 	if auth.CheckIsAdmin(c) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok"})
+		return
+	}
+	userfromDB, err := user.FindUserByID(objectID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
+		return
+	}
+
+	if userfromDB.Admin {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Admin kullanıcılar silinemez"})
 		return
 	}
 	err = user.DeleteUser(objectID)
