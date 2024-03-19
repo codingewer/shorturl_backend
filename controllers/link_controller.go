@@ -40,10 +40,16 @@ func ShortLink(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu link zaten mevcut"})
 		return
 	}
-	orginalurl, _ := url.FindByOriginal(url.OrginalUrl)
-	if orginalurl.OrginalUrl == url.OrginalUrl {
-		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu link zaten mevcut"})
+	urls, err := url.FindByCreatedBy(tokenUser.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": "Kullanıcı bulunamadı"})
 		return
+	}
+	for i, _ := range urls {
+		if urls[i].OrginalUrl == url.OrginalUrl {
+			c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu link zaten mevcut"})
+			return
+		}
 	}
 	//kullanıcını olup olmadığı ve kullanıcı link oluştruma seviyesi artırılır
 	err = user.NewLinkCount(tokenUser.UserName)
