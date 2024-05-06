@@ -81,6 +81,21 @@ func GetBalanceRequests(c *gin.Context) {
 	c.JSON(http.StatusOK, balanceRequests)
 }
 
+func GetBalanceRequestsPublic(c *gin.Context) {
+	balance := models.BalanceRequest{}
+	balanceRequests, err := balance.FindRequestsByStatus(true)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ERROR": err.Error()})
+		return
+	}
+	for i, _ := range balanceRequests {
+		usr := models.User{}
+		user, _ := usr.FindResposeUserByID(balanceRequests[i].UserId)
+		balanceRequests[i].User = user
+	}
+	c.JSON(http.StatusOK, balanceRequests)
+}
+
 func GetBalanceRequestsById(c *gin.Context) {
 	balance := models.BalanceRequest{}
 	claims, err := auth.ValidateUseToken(c)

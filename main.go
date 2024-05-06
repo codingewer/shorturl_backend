@@ -48,6 +48,7 @@ func main() {
 	balance.POST("/add", controllers.NewBalanceRequests)
 	balance.GET("/getbystatus/:status", controllers.GetBalanceRequests)
 	balance.PUT("/updatestatus/:status", controllers.UpdateBalanceRequest)
+	balance.GET("/getpaid", controllers.GetBalanceRequestsPublic)
 	balance.GET("/getbyuser", controllers.GetBalanceRequestsById)
 	balance.PUT("/info/updateinfo", controllers.UpdateBalanceInfo)
 	balance.GET("/info/getbyuserId", controllers.GetBalanceInfo)
