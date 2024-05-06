@@ -2,6 +2,7 @@ package models
 
 import (
 	"math/rand"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -30,4 +31,10 @@ func ComparePasswords(hashedPassword, password string) error {
 		return err
 	}
 	return nil
+}
+
+func ReplaceToStar(word string) string {
+	lenght := len(word)
+	staredPart := strings.Repeat("*", lenght-2)
+	return word[:2] + staredPart
 }

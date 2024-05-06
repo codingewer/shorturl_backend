@@ -92,6 +92,7 @@ func GetBalanceRequestsPublic(c *gin.Context) {
 		usr := models.User{}
 		user, _ := usr.FindResposeUserByID(balanceRequests[i].UserId)
 		balanceRequests[i].User = user
+		balanceRequests[i].User.UserName = models.ReplaceToStar(user.UserName)
 	}
 	c.JSON(http.StatusOK, balanceRequests)
 }
