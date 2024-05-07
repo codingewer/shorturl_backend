@@ -18,6 +18,9 @@ type Settings struct {
 	SmtpPassword     string             `bson:"smtp_password"`
 	RevenuePerClick  float64            `bson:"revenue_per_click"`
 	WithdrawnBalance float64            `bson:"withdrawn_balance"`
+	AllUsersLenght   int64              `bson:"all_users_length"`
+	AllClicksLenght  int64              `bson:"all_clicks_length"`
+	AllLinksLenght   int64              `bson:"all_links_length"`
 }
 
 func (s Settings) NewSettings() (*Settings, error) {
@@ -35,6 +38,16 @@ func (s Settings) NewSettings() (*Settings, error) {
 func (s Settings) FindBySiteName(siteName string) (*Settings, error) {
 	db, ctx := getSiteSettingsCollection()
 	filer := bson.M{"site_name": siteName}
+	user := User{}
+	link := Url{}
+	view := Seen{}
+	views, _ := view.FindAllSeenLength()
+	links, _ := link.FindAllUrl()
+	users, _ := user.FindAllUsers()
+	s.AllUsersLenght = int64(len(users))
+	s.AllLinksLenght = int64(len(links))
+	s.AllClicksLenght = views
+
 	err := db.FindOne(ctx, filer).Decode(&s)
 	if err != nil {
 		return &Settings{}, err
