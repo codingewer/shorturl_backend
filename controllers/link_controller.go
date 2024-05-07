@@ -35,10 +35,12 @@ func ShortLink(c *gin.Context) {
 		url.ShortenedUrl = models.GenerateString(10)
 	}
 
-	urlFromDB, _ := url.FindByUrl(url.ShortenedUrl)
-	if urlFromDB.ShortenedUrl == url.ShortenedUrl {
-		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu link zaten mevcut"})
-		return
+	urlsFromDB, _ := url.FindByCreatedBy(url.UserID)
+	for i, _ := range urlsFromDB {
+		if urlsFromDB[i].ShortenedUrl == url.ShortenedUrl {
+			c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Bu link zaten mevcut"})
+			return
+		}
 	}
 	urls, err := url.FindByCreatedBy(tokenUser.ID)
 	if err != nil {
