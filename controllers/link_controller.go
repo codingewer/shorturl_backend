@@ -104,7 +104,7 @@ func GetByUrl(c *gin.Context) {
 	}
 	visitor := models.GetVisitor(c.ClientIP())
 	// Eğer 10 dakikadan fazla zaman geçtiyse sayaç ve zamanı sıfırla.
-	if time.Since(visitor.LastReset) > 10*time.Minute {
+	if time.Since(visitor.LastReset) > 30*time.Minute {
 		visitor.Requests = 0
 		visitor.LastReset = time.Now()
 	}
