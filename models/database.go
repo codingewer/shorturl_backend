@@ -78,6 +78,7 @@ func init() {
 		AboutUs:          "We Short Urls",
 		AdSlot:           "1232435",
 		AdClient:         "ca-pub-123we234rwefwe",
+		ReChapchaCode:    "6LdVw5YpAAAAABsnsv9q6_EY_DsRiQIIPXxK2r0m",
 		RevenuePerClick:  0.2,
 		WithdrawnBalance: 100,
 	}

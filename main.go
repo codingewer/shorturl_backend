@@ -18,6 +18,7 @@ func main() {
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
 	config.AllowCredentials = true
 	config.AllowHeaders = []string{"Content-Type", "Authorization"}
+	router.TrustedPlatform = "X-Client-IP"
 	router.Use(cors.New(config))
 
 	url := router.Group("url")
