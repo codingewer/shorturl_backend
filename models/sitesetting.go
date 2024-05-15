@@ -38,15 +38,6 @@ func (s Settings) NewSettings() (*Settings, error) {
 func (s Settings) FindBySiteName(siteName string) (*Settings, error) {
 	db, ctx := getSiteSettingsCollection()
 	filer := bson.M{"site_name": siteName}
-	user := User{}
-	link := Url{}
-	view := Seen{}
-	views, _ := view.FindAllSeenLength()
-	links, _ := link.FindAllUrl()
-	users, _ := user.FindAllUsers()
-	s.AllUsersLenght = int64(len(users))
-	s.AllLinksLenght = int64(len(links))
-	s.AllClicksLenght = views
 
 	err := db.FindOne(ctx, filer).Decode(&s)
 	if err != nil {

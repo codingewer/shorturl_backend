@@ -16,6 +16,15 @@ func GetBySiteName(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	user := models.User{}
+	link := models.Url{}
+	view := models.Seen{}
+	views, _ := view.FindAllSeenLength()
+	links, _ := link.FindAllUrl()
+	users, _ := user.FindAllUsers()
+	stgns.AllUsersLenght = int64(len(users))
+	stgns.AllLinksLenght = int64(len(links))
+	stgns.AllClicksLenght = views
 	stgns.SmtpPassword = ""
 	c.JSON(http.StatusOK, stgns)
 }
