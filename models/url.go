@@ -53,10 +53,10 @@ func (url Url) FindAllUrl() ([]Url, error) {
 }
 
 // Kısaltılan link başlığına sahip veriyi çeken fonksiyon
-func (url Url) FindByUrl(shortenedurl string) (Url, error) {
+func (url Url) FindByUrl(createdBy, shortenedurl string) (Url, error) {
 	db := getUrlCollection()
 	ctx := context.TODO()
-	filter := bson.M{"shortened_url": shortenedurl}
+	filter := bson.M{"shortened_url": shortenedurl, "created_by": createdBy}
 	//Linki veri tabanından çekme
 	var result Url
 	err := db.FindOne(ctx, filter).Decode(&result)

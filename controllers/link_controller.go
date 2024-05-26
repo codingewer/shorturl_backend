@@ -118,7 +118,8 @@ func GetByUrl(c *gin.Context) {
 	}
 
 	title := c.Param("shortenedurl")
-	result, err := url.FindByUrl(title)
+	owner := c.Param("createdby")
+	result, err := url.FindByUrl(owner, title)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
