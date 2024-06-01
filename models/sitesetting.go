@@ -9,6 +9,9 @@ type Settings struct {
 	ID               primitive.ObjectID `bson:"_id"`
 	SiteName         string             `bson:"site_name"`
 	AboutUs          string             `bson:"about_us"`
+	ContactNumber    string             `bson:"contact_number"`
+	ContactEmail     string             `bson:"contact_email"`
+	Address          string             `bson:"address"`
 	PrivacyPolicy    string             `bson:"privacy_policy"`
 	TermsConditions  string             `bson:"terms_conditions"`
 	AdSlot           string             `bson:"ad_slot"`
@@ -63,6 +66,9 @@ func (s Settings) UpdateSettings(siteName string) (*Settings, error) {
 	}
 	update := bson.M{
 		"about_us":          s.AboutUs,
+		"contact_number":    s.ContactNumber,
+		"contact_email":     s.ContactEmail,
+		"address":           s.Address,
 		"ad_slot":           s.AdSlot,
 		"ad_client":         s.AdClient,
 		"revenue_per_click": s.RevenuePerClick,
