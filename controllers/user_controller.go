@@ -286,7 +286,7 @@ func DeleteUserByAdmin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Admin kullanıcılar silinemez"})
 		return
 	}
-	err = user.DeleteUser(objectID)
+	err = user.DeleteUser(userfromDB.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"ERROR": err.Error()})
 		return
