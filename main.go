@@ -43,7 +43,7 @@ func main() {
 	user.POST("/resetpassword/:token", controllers.NewPassword)
 
 	user.PUT("/updateblocked/:id", controllers.UpdateBlocked)
-	user.DELETE("/deletebyadmin/:id")
+	user.DELETE("/deletebyadmin/:id", controllers.DeleteUserByAdmin)
 
 	balance := router.Group("balance")
 	balance.POST("/add", controllers.NewBalanceRequests)
