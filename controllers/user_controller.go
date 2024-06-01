@@ -272,7 +272,7 @@ func DeleteUserByAdmin(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Geçersiz ID"})
 		return
 	}
-	if auth.CheckIsAdmin(c) {
+	if !auth.CheckIsAdmin(c) {
 		c.JSON(http.StatusBadRequest, gin.H{"ERROR": "Yetkiniz yok"})
 		return
 	}
